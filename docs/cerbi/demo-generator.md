@@ -64,7 +64,8 @@ story doesn't change.
 **7. Pages that look like paper.** Each invoice is drawn as a carrier's own
 form: letterhead, invoice box, bill-to, a line for each load and a total.
 Scans get skew, toner speckle, creases and fold lines from real
-public-domain paper photos, sometimes a coffee ring, and a received stamp; handwritten tickets get
+public-domain paper photos, a received stamp, and on one early page per run a
+coffee ring; handwritten tickets get
 blue ink; an unreadable quantity is a smudge. Every value the model read has
 a box on the page, and picking a box or a read field highlights both.
 
