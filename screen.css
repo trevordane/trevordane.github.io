@@ -1,6 +1,5 @@
 /* A monitor housing around the window, with lightly frosted glass in front and
-   fake parallax between the glass and the screen. Layered before bbs.css.
-   screen.js drives the parallax. */
+   glass over the screen. Layered before bbs.css. */
 
 :root {
   --frame: 42px;              /* housing + lip, from window edge to glass */
@@ -11,7 +10,6 @@
   --housing-lo: #06090b;      /* shadowed corner */
   --lip-color: #030506;
   --chamfer: #2b3f47;         /* highlight where housing steps down to the lip */
-  --px: 0; --py: 0;           /* pointer / tilt, -1..1, written by screen.js */
 }
 
 /* Four fixed, click-through layers, lit from the top left:
@@ -107,12 +105,9 @@ body::after {
   background-repeat: repeat, no-repeat, no-repeat;
   background-position:
     0 0,
-    calc(50% - var(--px) * 34px) calc(50% - var(--py) * 24px),
-    calc(50% - var(--px) * 20px) calc(50% - var(--py) * 14px);
+    50% 50%,
+    50% 50%;
 }
-
-/* Parallax, back layer: the screen content drifts a little with the pointer */
-#main { transform: translate(calc(var(--px) * 5px), calc(var(--py) * 4px)); }
 
 /* Keep content clear of the frame; keep the skip link above the glass */
 body { padding: calc(var(--frame) + 14px) calc(var(--frame) + 14px) calc(var(--frame) + 8px); }
