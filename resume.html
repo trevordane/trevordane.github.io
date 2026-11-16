@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Trevor Dane Respress · Résumé</title>
+  <meta name="robots" content="noindex">
+  <!-- Source of the résumé PDFs. Edit here, then run: node tools/export-resume.js
+       ?projects=all (default) | none  shows or drops the Projects section. -->
+  <link rel="stylesheet" href="fonts.css">
+  <style>
+    :root {
+      --bg: #061012; --raise: #0b191c; --line: #24434c; --box: #6b8b8f;
+      --ink: #e6e1d4; --dim: #93aaa6; --cyan: #5ff2e8; --amber: #ffae42;
+      --mono: "Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+    }
+    @page { size: Letter; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: #000; }
+    body {
+      width: 8.5in; height: 11in; margin: 0 auto; overflow: hidden;
+      background: var(--bg); color: var(--ink);
+      font: 9.6px/1.5 var(--mono);
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      display: flex; flex-direction: column;
+    }
+    ul { list-style: none; }
+    a { color: inherit; text-decoration: none; }
+    b { font-weight: 500; }
+    .page { flex: 1; padding: 40px 46px 0; display: flex; flex-direction: column; }
+
+    /* Top: banner on the left, contact box on the right */
+    .top { display: grid; grid-template-columns: auto 1fr; gap: 0 28px; align-items: start; }
+    .banner { font-size: 8.6px; line-height: 1.12; color: var(--cyan); white-space: pre; }
+    .banner .sur { color: var(--amber); }
+    h1.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .contact { border: 1px solid var(--box); padding: 12px 12px 10px; position: relative; margin-top: 4px; }
+    .contact .title { position: absolute; top: -.75em; left: 10px; padding: 0 5px; background: var(--bg); color: var(--dim); }
+    .kv { display: grid; grid-template-columns: max-content 1fr; gap: 1px 10px; }
+    .kv dt { color: var(--amber); }
+    .kv dd { overflow-wrap: anywhere; }
+
+    .tag { margin-top: 12px; color: var(--dim); letter-spacing: .08em; }
+    .tag .who { color: var(--ink); }
+    .shade {
+      height: 6px; margin: 9px 0 12px; opacity: .6;
+      background: linear-gradient(90deg, var(--cyan), var(--amber));
+      -webkit-mask: repeating-linear-gradient(90deg, #000 0 3px, transparent 3px 4.5px);
+      mask: repeating-linear-gradient(90deg, #000 0 3px, transparent 3px 4.5px);
+    }
+    .summary { font-size: 10.2px; max-width: 100ch; }
+
+    /* [1] EXPERIENCE ========== */
+    .head { display: flex; gap: 1ch; color: var(--amber); white-space: nowrap; margin: 16px 0 8px; }
+    .head .rule { flex: 1; overflow: hidden; color: var(--amber); opacity: .55; }
+    .head .rule::before { content: "========================================================================================================================================"; }
+
+    .job + .job { margin-top: 9px; }
+    .job-top { display: flex; justify-content: space-between; gap: 12px; }
+    .job h2 { color: var(--cyan); font-weight: 500; }
+    .when { color: var(--dim); white-space: nowrap; }
+    .as { color: var(--dim); margin-bottom: 2px; }
+    .as b { color: var(--ink); }
+    .bul li { padding-left: 2ch; text-indent: -2ch; }
+    .bul li + li { margin-top: 1px; }
+    .bul li::before { content: "* "; color: var(--amber); }
+    .short { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; margin-top: 9px; }
+    .short .job + .job { margin-top: 0; }
+
+    .tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 16px; }
+    .tools h3 { color: var(--cyan); font-weight: 400; }
+    .tools li { padding-left: 2ch; text-indent: -2ch; }
+    .tools li::before { content: "> "; color: var(--amber); }
+
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .cards:has(> .card:only-child) { grid-template-columns: 1fr; }
+    .card { border: 1px solid var(--box); padding: 10px 12px 9px; position: relative; }
+    .card h3 { position: absolute; top: -.75em; left: 10px; padding: 0 5px; background: var(--bg); color: var(--cyan); font-weight: 400; }
+    .card .tag2 { color: var(--amber); margin-bottom: 3px; }
+    .card p:last-child { color: var(--dim); }
+
+    .foot { margin-top: auto; padding: 8px 0 22px; border-top: 1px dashed var(--line); display: flex; justify-content: space-between; color: var(--dim); }
+
+    /* No-projects version: the freed space goes to air and slightly larger type */
+    body.roomy { font-size: 10.2px; }
+    body.roomy .head { margin: 22px 0 11px; }
+    body.roomy .job + .job { margin-top: 14px; }
+    body.roomy .short .job + .job { margin-top: 0; }   /* side-by-side pair stays aligned */
+    body.roomy .bul li + li { margin-top: 2px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1 class="sr">Trevor Dane Respress</h1>
+    <div class="top">
+      <pre class="banner" aria-hidden="true">  ______ ____   ______ _    __ ____   ____     ____   ___     _   __ ______
+ /_  __// __ \ / ____/| |  / // __ \ / __ \   / __ \ /   |   / | / // ____/
+  / /  / /_/ // __/   | | / // / / // /_/ /  / / / // /| |  /  |/ // __/
+ / /  / _, _// /___   | |/ // /_/ // _, _/  / /_/ // ___ | / /|  // /___
+/_/  /_/ |_|/_____/   |___/ \____//_/ |_|  /_____//_/  |_|/_/ |_//_____/
+<span class="sur">    ____   ______ _____  ____   ____   ______ _____ _____
+   / __ \ / ____// ___/ / __ \ / __ \ / ____// ___// ___/
+  / /_/ // __/   \__ \ / /_/ // /_/ // __/   \__ \ \__ \
+ / _, _// /___  ___/ // ____// _, _// /___  ___/ /___/ /
+/_/ |_|/_____/ /____//_/    /_/ |_|/_____/ /____//____/</span></pre>
+      <section class="contact">
+        <h2 class="title">[ CONTACT ]</h2>
+        <dl class="kv">
+          <dt>EMAIL</dt><dd><a href="mailto:trevordrespress@gmail.com">trevordrespress@gmail.com</a></dd>
+          <dt>WEB</dt><dd><a id="site-link" href="https://trevordane.github.io/">trevordane.github.io</a></dd>
+          <dt>LINKEDIN</dt><dd><a href="https://www.linkedin.com/in/trevordrespress">linkedin.com/in/trevordrespress</a></dd>
+          <dt>BASED</dt><dd>New Bern, NC</dd>
+        </dl>
+      </section>
+    </div>
+    <p class="tag"><b class="who">TREVOR DANE RESPRESS</b> // BUSINESS SYSTEMS ANALYST &amp; DEVELOPER // APPLIED AI x AUTOMATION</p>
+    <div class="shade" aria-hidden="true"></div>
+    <p class="summary">Operations and logistics professional turned business systems analyst. Builds AI-driven document automation, internal tools and paperless workflows, backed by hands-on experience in freight, finance and customer operations. Less paper. Fewer clicks.</p>
+
+    <h2 class="head"><span>[1] EXPERIENCE</span><span class="rule" aria-hidden="true"></span></h2>
+    <section class="job">
+      <div class="job-top"><h2>TITAN AVIATION FUELS</h2><p class="when">2026-07 .. present</p></div>
+      <p class="as"><b>Business Systems Analyst</b> (2026-10 ..), promoted from <b>Freight Coordinator</b> (2026-07) / New Bern, NC</p>
+      <ul class="bul">
+        <li>Built Cerbi, a Python and Anthropic Claude API platform that reads scanned, handwritten and emailed carrier documents and files about 13,000 loads a month from about 9,000 documents.</li>
+                <li>Built a rules engine, duplicate checks and review inbox: clean invoices file on their own, the rest go to a person.</li>
+        <li>Connected Cerbi to Claude agents through MCP servers; run its development with Claude Code agents and PR review.</li>
+        <li>Built Nexus, a TypeScript alert hub on Cloudflare Workers where AI agents triage issues and a person approves by phone.</li>
+        <li>Integrated Microsoft Graph, the Samsara API and the company’s ERP; deployed on IIS with CI on GitHub Actions.</li>
+        <li>Built a driver-ticket reader and a pay-rate lookup tool for the company’s trucking carrier, both in daily use.</li>
+        <li>Building lane pricing from regional per-mile baselines and historical lane rates, tying charges to driver pay.</li>
+        <li>Leading the move off paper onto one internal web platform; scoping carrier data feeds (EDI 210/214, APIs) and self-hosted AI models.</li>
+      </ul>
+    </section>
+    <section class="job">
+      <div class="job-top"><h2>SGM LLC / SGM ApS</h2><p class="when">2022-05 .. 2026-02</p></div>
+      <p class="as"><b>North American Logistics &amp; Customer Care Coordinator</b> / Remote</p>
+      <ul class="bul">
+        <li>Escalation point for complex customer, logistics and billing issues across US and EU accounts.</li>
+        <li>Managed US and EU order lifecycles: POs, invoices, tariffs, tax IDs and shipping documents.</li>
+        <li>Designed internal systems, documentation and tutorials that standardized workflows and reduced errors.</li>
+        <li>Coordinated domestic and international freight, forwarders and invoicing, including lithium-battery (hazmat) shipments.</li>
+        <li>Managed inventory, SKUs and price lists in Dynamics AX, including demo gear across the US; quoted in AX and Salesforce.</li>
+      </ul>
+    </section>
+    <div class="short">
+      <section class="job">
+        <div class="job-top"><h2>TIN &amp; TACO</h2><p class="when">2021-08 .. 2022-05</p></div>
+        <p class="as"><b>Manager</b> / Orlando, FL</p>
+      </section>
+      <section class="job">
+        <div class="job-top"><h2>JDR ELECTRIC</h2><p class="when">2020-07 .. 2021-08</p></div>
+        <p class="as"><b>Electrician</b> / Avon Park, FL</p>
+      </section>
+    </div>
+
+    <h2 class="head"><span>[2] TOOLKIT</span><span class="rule" aria-hidden="true"></span></h2>
+    <div class="tools">
+      <div><h3>BUILD/</h3><ul><li>Python · TypeScript</li><li>Anthropic Claude API · MCP</li><li>LLM document extraction · OCR</li><li>Prompt design · structured outputs (JSON)</li><li>Evals · human-in-the-loop review</li><li>Internal tool development</li><li>Workflow automation</li></ul></div>
+      <div><h3>INTEGRATE/</h3><ul><li>REST APIs</li><li>Microsoft Graph · SharePoint</li><li>Samsara · Square9</li><li>Fuel-industry ERP systems · SQL</li><li>IIS · GitHub Actions</li><li>Cloudflare Workers</li></ul></div>
+      <div><h3>OPERATE/</h3><ul><li>Process optimization</li><li>Systems design</li><li>Logistics management</li><li>Cross-border trade &amp; compliance</li><li>Project management</li><li>Technical writing</li><li>Microsoft Office · Dynamics AX</li></ul></div>
+    </div>
+
+    <div class="projects">
+      <h2 class="head"><span>[3] PROJECTS</span><span class="rule" aria-hidden="true"></span></h2>
+      <div class="cards">
+        <div class="card" data-project="cerbi-demo">
+          <h3>[ CERBI DEMO ]</h3>
+          <p class="tag2">SEEDED DEMO-DATA GENERATOR / JAVASCRIPT</p>
+          <p>Runs Cerbi's interface on invented data. Builds a consistent world (carriers, rates, orders, lanes) before any invoice; 4 scenarios pin their key moment to the first minute; 3 industry themes are swappable lists. Same seed, same demo: shareable link and JSON export.</p>
+        </div>
+        <div class="card" data-project="writing">
+          <h3>[ WRITING ]</h3>
+          <p class="tag2">CASE STUDY / DESIGN DOC / DECISION RECORDS</p>
+          <p>Public write-ups of Cerbi for non-engineers and engineers: a one-page case study, a metrics report, a design document, seven decision records and how the demo generator works.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="foot"><span>trevordane.github.io</span><span>-- end of file --</span></p>
+  </div>
+
+  <script>
+    // Variants for the export: ?projects=none drops the Projects section
+    // and links the website to the plain view.
+    const projects = new URLSearchParams(location.search).get("projects");
+    if (projects === "none") {
+      document.querySelector(".projects").remove();
+      document.body.classList.add("roomy");
+      document.getElementById("site-link").href = "https://trevordane.github.io/";
+    }
+
+    // Draw the ASCII banner as an image (4x, so it prints sharp). As text, a résumé
+    // parser would read it as slashes; the name is real text in the line below.
+    document.fonts.ready.then(() => {
+      const pre = document.querySelector(".banner");
+      const box = pre.getBoundingClientRect(), cs = getComputedStyle(pre), scale = 4;
+      const lh = parseFloat(cs.lineHeight), size = parseFloat(cs.fontSize);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.ceil(box.width * scale); canvas.height = Math.ceil(box.height * scale);
+      canvas.style.width = box.width + "px"; canvas.style.height = box.height + "px";
+      canvas.setAttribute("role", "img"); canvas.setAttribute("aria-label", "Trevor Dane Respress");
+      const ctx = canvas.getContext("2d");
+      ctx.scale(scale, scale); ctx.font = `${size}px ${cs.fontFamily}`; ctx.textBaseline = "middle";
+      const sur = pre.querySelector(".sur");
+      const nameLines = pre.firstChild.textContent.replace(/\n$/, "").split("\n");
+      const surLines = sur.textContent.split("\n");
+      [[nameLines, cs.color], [surLines, getComputedStyle(sur).color]].reduce((row, [lines, color]) => {
+        ctx.fillStyle = color;
+        lines.forEach((line, i) => ctx.fillText(line, 0, (row + i + 0.5) * lh));
+        return row + lines.length;
+      }, 0);
+      pre.replaceWith(canvas);
+      document.body.dataset.ready = "1";
+    });
+  </script>
+</body>
+</html>

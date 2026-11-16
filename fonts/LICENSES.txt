@@ -1,0 +1,6 @@
+All fonts in this folder are licensed under the SIL Open Font License 1.1.
+- IBM Plex Sans, IBM Plex Mono: OFL-IBM-Plex.txt
+- Source Serif 4: OFL-Source-Serif-4.txt
+- Michroma, Caveat: via Fontsource (fontsource.org), from Google Fonts
+- DSEG7 Classic: https://github.com/keshikan/DSEG
+Full licence text: https://openfontlicense.org/open-font-license-official-text/

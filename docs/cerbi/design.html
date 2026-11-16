@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design document (Cerbi) · Trevor Dane Respress</title>
+  <meta name="description" content="Cerbi reads freight paperwork for an aviation fuel distributor. Carrier invoices, bills of lading (BOLs), delivery tickets and driver notes arrive by email and from scanners, often">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#04080a">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='6' fill='%2304080a'/%3E%3Crect x='10' y='14' width='22' height='5' fill='%23ffae42'/%3E%3Crect x='10' y='16' width='44' height='1' fill='%2322404a'/%3E%3Ctext x='32' y='50' font-family='Arial,sans-serif' font-size='20' font-weight='700' fill='%23ebe5d8' text-anchor='middle'%3ETDR%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../../fonts.css">
+  <link rel="stylesheet" href="../../screen.css">
+  <link rel="stylesheet" href="../../bbs.css">
+  <style>
+    .doc-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .4em 3ch; }
+    .logo { color: var(--cyan); line-height: 1.12; }
+    .back { margin-left: auto; text-decoration: none; } .back .k, .docnav .k { color: var(--amber); }
+    .docnav { display: flex; flex-wrap: wrap; gap: .2em 2.5ch; margin: 1.1em 0 0; padding-bottom: .5em; border-bottom: 1px solid var(--line); }
+    .docnav a { text-decoration: none; }
+    .docnav a[aria-current] { color: var(--on-light); background: var(--cyan); padding: 0 .6ch; }
+    .docnav a[aria-current] .k { color: var(--on-light); }
+    .prose { max-width: 92ch; padding: 1.2em 0 2em; }
+    .prose > * + * { margin-top: .9em; }
+    .prose h1 { color: var(--cyan); font-size: 1.25em; }
+    .prose h1::before { content: "== "; color: var(--box); }
+    .prose h2 { color: var(--amber); margin-top: 1.8em; }
+    .prose h2::before { content: "-- "; color: var(--box); }
+    .prose h3 { color: var(--cyan); margin-top: 1.4em; }
+    .prose p, .prose li { color: var(--ink); }
+    .prose em { color: var(--dim); }
+    .prose ul li { padding-left: 2.5ch; text-indent: -2.5ch; }
+    .prose ul li::before { content: "*  "; color: var(--amber); }
+    .prose ol { counter-reset: n; }
+    .prose ol li { counter-increment: n; padding-left: 4ch; text-indent: -4ch; }
+    .prose ol li::before { content: counter(n, decimal-leading-zero) "  "; color: var(--amber); }
+    .prose li + li { margin-top: .35em; }
+    .prose code { color: var(--cyan); }
+    .prose pre { background: var(--raise); border: 1px solid var(--line); padding: .7em 1.5ch; overflow-x: auto; }
+    .prose hr { border: 0; border-top: 1px dashed var(--line); }
+    .prose .tablewrap { overflow-x: auto; }
+    .prose table { border-collapse: collapse; font-size: .93em; min-width: 60%; }
+    .prose th { color: var(--dim); font-weight: 400; text-align: left; border-bottom: 1px solid var(--box); }
+    .prose td, .prose th { padding: .25em 1.2ch; vertical-align: top; }
+    .prose td { border-bottom: 1px dotted var(--line); }
+    .prose .r { text-align: right; white-space: nowrap; }
+    @media (max-width: 700px) { .prose .r { white-space: normal; } .prose table { width: 100%; } }
+    .prose strong { color: var(--amber); font-weight: 500; }
+    .prose td strong { color: var(--cyan); }
+    .prose img, .prose svg.chart { display: block; max-width: 100%; height: auto; border: 1px solid var(--line); }
+    .prose figure figcaption { color: var(--dim); font-size: .9em; margin-top: .4em; }
+    .gen { color: var(--dim); font-size: .85em; border-top: 1px solid var(--line); padding-top: .6em; }
+  </style>
+</head>
+<body>
+  <main id="main">
+    <div class="bbs">
+      <header class="doc-head">
+        <pre class="logo" aria-hidden="true">  _____ ____ ___   ___   ____
+ / ___// __// _ \ / _ ) /  _/
+/ /__ / _/ / , _// _  |_/ /
+\___//___//_/|_|/____//___/</pre>
+        <p class="sr-only">Cerbi</p>
+        <a class="back" href="../../"><span class="k">[B]</span> Back to the board</a>
+      </header>
+      <nav class="docnav" aria-label="Cerbi documents"><a href="index.html"><span class="k">[0]</span> Index</a><a href="case-study.html"><span class="k">[1]</span> Case study</a><a href="design.html" aria-current="page"><span class="k">[2]</span> Design</a><a href="cost-and-metrics.html"><span class="k">[3]</span> Metrics</a><a href="demo-generator.html"><span class="k">[4]</span> Demo generator</a><a href="decisions/index.html"><span class="k">[5]</span> Decisions</a></nav>
+      <article class="prose">
+<h1 id="cerbi-design-document">Cerbi: design document</h1>
+<p><strong>Author:</strong> Trevor Dane Respress, Business Systems Analyst, Titan Aviation Fuels · <strong>Status:</strong> in production since September 2026; ERP import built, production cutover pending · <strong>As of:</strong> 30 October 2026</p>
+<p><em>This is the portfolio version of Cerbi's internal design document. The internal one is about 6,000 lines and lives in a private repository. Names of carriers, customers, coworkers and internal systems are left out here; the architecture, decisions and numbers are real.</em></p>
+<p>Related: <a href="cost-and-metrics.html">metrics</a> · <a href="case-study.html">case study</a> · <a href="decisions/index.html">decision records</a> · <a href="architecture.svg">architecture diagram</a></p>
+<hr>
+<h2 id="1-summary">1. Summary</h2>
+<p>Cerbi reads freight paperwork for an aviation fuel distributor. Carrier invoices, bills of lading (BOLs), delivery tickets and driver notes arrive by email and from scanners, often handwritten or badly scanned. Cerbi works out what each page is and who sent it, reads every load on it with a vision-language model, checks each load against its business rules, and then does one of three things:</p>
+<ul><li><strong>files</strong> the load: copies the paperwork into that load's folder and adds it to an ERP import batch;</li><li>parks it in <strong>Limbo</strong>, when it is waiting for paperwork that has not arrived yet (a BOL before its invoice);</li><li>holds it in <strong>Purgatory</strong> for a person, with a reason of six words or fewer.</li></ul>
+<p>In October 2026 it received <strong>9,064 documents</strong> carrying <strong>13,735 loads</strong>. <strong>96.5%</strong> of loads were filed, <strong>51.9%</strong> with no person touching them; 1.5% waited in Limbo and 1.0% on a person. Duplicate checks closed 61 duplicate invoice loads before they could be paid twice.</p>
+<h2 id="2-problem">2. Problem</h2>
+<p>Before Cerbi, every carrier invoice was handled by hand:</p>
+<ol><li>Someone printed the invoice and the matching BOL.</li><li>Someone found the load in the ERP, worked out the freight rate and keyed the invoice.</li><li>Someone filed the paper packet by date and carrier, and later matched it again for profit and loss reporting.</li></ol>
+<p>That is several people touching each document. The paperwork is hard for software, too:</p>
+<ul><li><strong>Mixed packets.</strong> One PDF can hold 21 separate invoices, or eight invoice-and-BOL pairs, with every page footed "Page 1 of 1".</li><li><strong>Bad input.</strong> Handwritten tickets, phone photos and 600 dpi scans.</li><li><strong>Ambiguous senders.</strong> Many carriers bill through the same accounting platforms, so the sender address often does not say who the carrier is.</li><li><strong>Many loads per document.</strong> 1.55 loads per document on average, and one invoice can span several loads.</li></ul>
+<p>An earlier attempt used an off-the-shelf capture product with a built-in AI extraction step. It worked for clean invoices but could not be taught the company's rules, could not explain why it stopped, and broke when its table schema changed. Cerbi replaced it.</p>
+<h2 id="3-goals-and-non-goals">3. Goals and non-goals</h2>
+<p><strong>Goals</strong></p>
+<ul><li>File every complete document with no person involved.</li><li>When something stops, say why in a few words, and let a person fix it in one step.</li><li>Make every business rule explain itself: a held load names the rule that held it.</li><li>Spend on the model deliberately: cheap by default, capped, and measured.</li><li>Never lose a document and never read the same one twice by accident.</li></ul>
+<p><strong>Non-goals</strong></p>
+<ul><li>Replacing the ERP. Cerbi feeds it.</li><li>Fully automatic sender learning. A person approves every new sender rule (see <a href="decisions/0004-exact-before-fuzzy.html">ADR 0004</a>).</li><li>Real-time processing. Paperwork arriving within the hour is fine, which is what makes the Batch API usable.</li></ul>
+<h2 id="4-architecture">4. Architecture</h2>
+<figure><img src="architecture.svg" alt="Cerbi architecture" loading="lazy"></figure>
+<p>Cerbi is one flat Python package with no web framework and no build step. It runs as a service on a Windows server, stores its state in SQLite, and serves a single-page review app to staff signed in with their Windows accounts. The internal web platform it files into (built by a teammate) runs on the same server.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Stage</th><th>What it does</th><th>Key design choice</th></tr></thead>
+<tbody>
+<tr><td>01 Intake</td><td>Pulls documents from a shared mailbox (Microsoft Graph), watched drop folders, and the owned fleet's telematics system.</td><td>The mailbox reader is read-only and has a not-before cutoff so old mail is never reprocessed.</td></tr>
+<tr><td>02 Ledger</td><td>Records one row per envelope ever seen.</td><td>Idempotency lives here: a unique key on the source plus a content hash, so the same attachment arriving twice is read once. The raw source is kept so any document can be re-read later.</td></tr>
+<tr><td>03 Segment</td><td>Splits long packets into invoices.</td><td>A small, cheap model tags each page (invoice, BOL, ticket, note, statement) for a small fraction of the cost of a read; pages are grouped before the expensive read.</td></tr>
+<tr><td>04 Extract</td><td>Reads each group into structured JSON.</td><td>Native PDF document blocks rather than rasterised images (cheaper and more accurate); a fixed output schema; no generated placeholders; requests that cannot succeed are never sent.</td></tr>
+<tr><td>05 Identify</td><td>Works out the carrier and matches each load to the ERP's records.</td><td>Exact alias table first, fuzzy match second, person third. Fuzzy matching alone was <em>confidently wrong</em> 4 times in 94 on real carrier names.</td></tr>
+<tr><td>06 Rules</td><td>Runs every check and decides the outcome.</td><td>Every check that can stop a load has a name, and a held load carries it.</td></tr>
+<tr><td>Outcome</td><td>Filed, Limbo or Purgatory.</td><td>A filed load's paperwork is copied into its load folder with a manifest and SHA-256 per file; an ERP import batch is generated from filed invoices.</td></tr>
+</tbody></table></div>
+<h3 id="41-rules">4.1 Rules</h3>
+<p>Every check that can hold, discard or route a load is a named rule. A held load names the rule that held it and carries a short reason (see 4.2).</p>
+<h3 id="42-holds-purgatory-and-limbo">4.2 Holds: Purgatory and Limbo</h3>
+<p>Two queues, because "held" meant two different things:</p>
+<ul><li><strong>Purgatory</strong>: a person must decide. Each hold carries a <em>short reason</em> (at most six words, never a value, the same words for every load held there) plus a longer note with the numbers and what to do.</li><li><strong>Limbo</strong>: nothing for a person to do yet. A BOL that arrives before its invoice parks here and files itself when the invoice lands.</li></ul>
+<p>A held load is an appeal, not a dead end. The <strong>Recheck</strong> button re-runs every rule against fresh reference data <em>without</em> paying for another model read: a value a person typed is kept, a duplicate of an already-filed invoice closes, and a load that now matches the ERP files. See <a href="decisions/0006-short-reasons-two-queues.html">ADR 0006</a>.</p>
+<p>In production about half of all loads are held at least once, mostly because an invoice and its BOL arrive separately. Of the holds closed with a decision, 52.6% were cleared by Cerbi itself and 42.7% by a person; the median hold clears in 21.6 hours. Paperwork-timing holds mostly clear themselves; missing information (carrier, delivery date, BOL number) almost always needs a person.</p>
+<h3 id="43-extraction">4.3 Extraction</h3>
+<ul><li><strong>Model:</strong> Claude Sonnet 5 at $2 per million input tokens and $10 per million output tokens, with Claude Haiku 4.5 for page tagging and signature checks.</li><li><strong>Input:</strong> native PDF document blocks, uploaded through the Files API when large. An early version rasterised pages to PNG at 200 dpi; it paid for detail the API downsampled away and turned a 53 KB PDF into a 134 KB request.</li><li><strong>Output:</strong> a header (vendor, invoice number, date, amount, remit-to) and one row per load (BOL, load number, delivery date and state, gallons, charges, source page). One prompt for every carrier, with per-carrier context added, rather than per-carrier prompts that drift apart.</li><li><strong>The read is a suggestion.</strong> Extraction runs even when the sender is unknown, and its read of the vendor pre-fills the review card. A person confirms with one click instead of searching a 3,000-row vendor list.</li><li><strong>Measured accuracy</strong> on 51 labelled documents: vendor correct 92%, carrier ID resolved 96%, delivery state 96%, delivery date 94%, BOL number 92%, invoice number 84% (coverage, not correctness, for the last five).</li></ul>
+<h3 id="44-batches">4.4 Batches</h3>
+<p>Most paperwork is not urgent, so reads go through the Batch API at half price. Automatic batching submits when enough documents are waiting or the oldest has waited long enough, under a per-batch and a per-24-hour spend cap. A batch is planned, priced, trimmed to its cap and then submitted; results are collected into the ledger with the real token usage. See <a href="decisions/0003-batch-by-default.html">ADR 0003</a>.</p>
+<p>In production 72% of documents are read by batch, at about half the cost of a live read. Turnaround from email to filed or held was a median of 21 hours in October, the first month of day-to-day running.</p>
+<h3 id="45-the-review-app">4.5 The review app</h3>
+<p>Four main views over one ledger: the <strong>Master Ledger</strong> (every load, every value, every tag), <strong>Purgatory</strong>, <strong>Limbo</strong> and <strong>Reports</strong>. Purgatory has a card view that shows each page beside the values read from it. Bulk actions (recheck, send to Limbo, send to a group, send to an action) work on filtered lists. A <strong>Console</strong> runs every operational command, so no server step needs a shell.</p>
+<h2 id="5-data-model">5. Data model</h2>
+<p>SQLite behind a thin repository layer.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Table</th><th>One row per</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><code>source_message</code></td><td>envelope ever seen</td><td>the ledger; unique on source key</td></tr>
+<tr><td><code>page</code></td><td>page</td><td>page type and which invoice it belongs to</td></tr>
+<tr><td><code>invoice</code></td><td>invoice found in a document</td><td>several per document is normal</td></tr>
+<tr><td><code>load_row</code></td><td>load</td><td>the unit that is filed or held</td></tr>
+<tr><td><code>tag</code></td><td>fact about an object</td><td>value plus provenance (<code>read</code>, <code>rule</code>, <code>human</code>, <code>vlm</code>)</td></tr>
+<tr><td><code>validation_task</code></td><td>open issue</td><td>one per issue, not per document</td></tr>
+<tr><td><code>vendor_alias</code></td><td>extracted name → carrier id</td><td>grows as people resolve holds</td></tr>
+<tr><td><code>sender_rule</code></td><td>address or domain → carrier</td><td>written only by a person</td></tr>
+<tr><td><code>processing_run</code> / <code>processing_item</code></td><td>run / document in a run</td><td>every document in every run</td></tr>
+<tr><td><code>audit_event</code></td><td>event</td><td>append-only</td></tr>
+</tbody></table></div>
+<p>Provenance is the important column. A carrier tagged by the model is enough to file a document; it is never enough to create a sender rule.</p>
+<h2 id="6-reliability-and-safety">6. Reliability and safety</h2>
+<p>The first real run taught most of this section. Within 20 minutes of the first live extraction, the API key was disabled. The cause was not volume (the run had spent almost nothing) but shape: the per-document error handler treated an authentication failure like a bad PDF and moved on, so one rejected request became about 157 in a row, which looks like credential probing from outside. Four rules came out of it, all built:</p>
+<ol><li><strong>Debug with one document.</strong> <code>run.py document &lt;file&gt;</code> drives one file end to end.</li><li><strong>Abort on fatal errors.</strong> 401, 403, 404 and 429 stop the whole run. Three failures in a row, or a failure rate above about 34% after twelve documents, also stop it. A corrupt PDF does not. See <a href="decisions/0005-circuit-breaker.html">ADR 0005</a>.</li><li><strong>Never send a request that cannot succeed.</strong> Size and page count are checked before sending; oversized documents are uploaded instead.</li><li><strong>A key belongs to one application.</strong> The key is encrypted with Windows DPAPI, decrypted only into the one process that needs it, and a pre-commit hook refuses anything shaped like a live key.</li></ol>
+<p>Also:</p>
+<ul><li><strong>Stub by default.</strong> Without a key, a stub extractor stands in, so every stage except the read can be tested for free. See <a href="decisions/0001-stub-by-default.html">ADR 0001</a>.</li><li><strong>Spend caps</strong> per batch and per 24 hours; a throttle with a speed dial and a pause.</li><li><strong>Nightly ledger backups</strong> taken by the app itself, plus one before every update.</li><li><strong>Gentle on the shared server.</strong> After three review agents sent the live app about 1,500 requests in a few minutes and took it down for 40 minutes, bulk reads come from one export request and are analysed locally; spot checks are one at a time, at most about 50 per task.</li></ul>
+<h2 id="7-testing-and-quality">7. Testing and quality</h2>
+<ul><li><strong>About 3,800 test functions in 210 modules</strong> (67,000 lines of tests against about 82,000 lines of application Python), run in CI on every push, before every update on the server, and isolated from the machine's real mail folders and workbook. No key and no network needed.</li><li><strong>Three harnesses:</strong> <code>selfcheck</code> (configuration), <code>wiretest</code> (one real call end to end) and <code>evaluate</code> (a labelled set of 51 documents scored per field). A prompt change can be scored against the published prompt before it is published, with both scores side by side.</li><li><strong>UI rules as tests.</strong> The review app's style rules (tokens, button classes, an inline-style budget that can only go down) are checked in CI.</li><li><strong>Reviews from exports.</strong> Periodic reviews read full Ledger and Purgatory exports and rank findings; the 6 October review drove the drop in Purgatory described in the <a href="cost-and-metrics.html">metrics</a>.</li><li><strong>An analytics export</strong> reads the whole ledger in one pass: volumes, outcomes, holds by reason, turnaround, cost by read path, failures and corrections. In October: 5 of 9,064 documents failed outright; people corrected 2.0% of filed loads (a lower bound on read errors, not a precision figure).</li></ul>
+<h2 id="8-how-it-was-built">8. How it was built</h2>
+<ul><li><strong>Timeline:</strong> first commit 15 September 2026; in production within weeks; 1,355 commits, 485 merged pull requests and 193 release tags by 26 October.</li><li><strong>Method:</strong> I designed the system, wrote the design documents and rules, and reviewed and merged every change. AI coding agents (Claude Code) wrote much of the code from those documents: about 70% of commits are agent-authored, each one reviewed before merging. The repository's standing rules (short reasons, every command runnable from the Console, go gently on the live server) exist to keep that work consistent.</li><li><strong>Stack:</strong> Python, SQLite, the Claude API (Messages, Files and Batch), Microsoft Graph, a single-page HTML/JavaScript app, Windows Server with IIS and Windows sign-in, GitHub Actions.</li></ul>
+<h2 id="9-what-is-next">9. What is next</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Item</th><th>Why</th><th>Expected effect</th></tr></thead>
+<tbody>
+<tr><td>ERP import in production</td><td>Staff still key invoices by hand</td><td>the largest remaining time saving</td></tr>
+<tr><td>Cheaper large packets</td><td>2% of documents (long packets split into invoice groups) are 38% of model spend</td><td>the largest single cost reduction available</td></tr>
+<tr><td>Prompt caching</td><td>The prompt is identical on every call, and repeated for every group of a packet</td><td>cuts the input side; output is about half the cost</td></tr>
+<tr><td>Fleet documents straight from telematics</td><td>The owned fleet's tickets are retyped</td><td>removes a second keying step</td></tr>
+<tr><td>Local vision model research</td><td>Spend, data residency</td><td>research only; measured with the same evaluation set</td></tr>
+<tr><td>Highlight learning</td><td>Boxes people draw on pages are recorded</td><td>training data for where values sit on each carrier's layout</td></tr>
+</tbody></table></div>
+<h2 id="10-lessons">10. Lessons</h2>
+<ol><li><strong>Let every hold explain itself.</strong> Most of the improvement after launch came from operations staff reading hold reasons and asking for a rule to change, not from model changes.</li><li><strong>Measure before you budget.</strong> The cost estimate, derived from documented image-token formulas, was low by about 1.75×. The measured figure is the one in every plan now.</li><li><strong>Fuzzy matching fails confidently.</strong> Raising a threshold cannot fix a name that genuinely sits closer to the wrong carrier. An exact alias table, grown by people, can.</li><li><strong>An error is either about the document or about the run.</strong> Treating the second like the first is how a run that had spent almost nothing lost an API key.</li></ol>
+      </article>
+      <p class="gen">Generated from <a href="https://github.com/trevordane/trevordane.github.io/blob/main/docs/cerbi/design.md">design.md</a> by build.py. Figures as of October 2026.</p>
+    </div>
+  </main>
+  <script src="../../screen.js"></script>
+</body>
+</html>

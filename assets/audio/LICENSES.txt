@@ -1,0 +1,15 @@
+All sounds in this folder are derived from CC0 (public domain) recordings on
+OpenGameArt. CC0 needs no attribution; the sources are listed for the record.
+https://creativecommons.org/publicdomain/zero/1.0/
+
+ambience.wav   Mix of two loops, band-limited, compressed and quietened:
+               - "noise_01.ogg" from "30 CC0 SFX loops" by rubberduck
+                 https://opengameart.org/content/30-cc0-sfx-loops
+                 (time-stretched about 8% so three repeats fill 20 s)
+               - "static6.wav" from "Frequency Static Sound Effects" by bretbernhoft
+                 https://opengameart.org/content/frequency-static-sound-effects
+                 (20 s excerpt, crossfaded into a seamless loop)
+
+glitch-1.wav   Three 0.34 s bursts cut from "static1.wav" in
+glitch-2.wav   "Frequency Static Sound Effects" by bretbernhoft (link above),
+glitch-3.wav   band-limited and shaped like a radio squelch.

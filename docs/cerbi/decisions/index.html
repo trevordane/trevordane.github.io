@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Decision records (Cerbi) · Trevor Dane Respress</title>
+  <meta name="description" content="Short records of the decisions that shaped Cerbi. Each gives the context, the decision and its consequences. Dates are when the decision was made. Related: design · cost and metric">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#04080a">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='6' fill='%2304080a'/%3E%3Crect x='10' y='14' width='22' height='5' fill='%23ffae42'/%3E%3Crect x='10' y='16' width='44' height='1' fill='%2322404a'/%3E%3Ctext x='32' y='50' font-family='Arial,sans-serif' font-size='20' font-weight='700' fill='%23ebe5d8' text-anchor='middle'%3ETDR%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../../../fonts.css">
+  <link rel="stylesheet" href="../../../screen.css">
+  <link rel="stylesheet" href="../../../bbs.css">
+  <style>
+    .doc-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .4em 3ch; }
+    .logo { color: var(--cyan); line-height: 1.12; }
+    .back { margin-left: auto; text-decoration: none; } .back .k, .docnav .k { color: var(--amber); }
+    .docnav { display: flex; flex-wrap: wrap; gap: .2em 2.5ch; margin: 1.1em 0 0; padding-bottom: .5em; border-bottom: 1px solid var(--line); }
+    .docnav a { text-decoration: none; }
+    .docnav a[aria-current] { color: var(--on-light); background: var(--cyan); padding: 0 .6ch; }
+    .docnav a[aria-current] .k { color: var(--on-light); }
+    .prose { max-width: 92ch; padding: 1.2em 0 2em; }
+    .prose > * + * { margin-top: .9em; }
+    .prose h1 { color: var(--cyan); font-size: 1.25em; }
+    .prose h1::before { content: "== "; color: var(--box); }
+    .prose h2 { color: var(--amber); margin-top: 1.8em; }
+    .prose h2::before { content: "-- "; color: var(--box); }
+    .prose h3 { color: var(--cyan); margin-top: 1.4em; }
+    .prose p, .prose li { color: var(--ink); }
+    .prose em { color: var(--dim); }
+    .prose ul li { padding-left: 2.5ch; text-indent: -2.5ch; }
+    .prose ul li::before { content: "*  "; color: var(--amber); }
+    .prose ol { counter-reset: n; }
+    .prose ol li { counter-increment: n; padding-left: 4ch; text-indent: -4ch; }
+    .prose ol li::before { content: counter(n, decimal-leading-zero) "  "; color: var(--amber); }
+    .prose li + li { margin-top: .35em; }
+    .prose code { color: var(--cyan); }
+    .prose pre { background: var(--raise); border: 1px solid var(--line); padding: .7em 1.5ch; overflow-x: auto; }
+    .prose hr { border: 0; border-top: 1px dashed var(--line); }
+    .prose .tablewrap { overflow-x: auto; }
+    .prose table { border-collapse: collapse; font-size: .93em; min-width: 60%; }
+    .prose th { color: var(--dim); font-weight: 400; text-align: left; border-bottom: 1px solid var(--box); }
+    .prose td, .prose th { padding: .25em 1.2ch; vertical-align: top; }
+    .prose td { border-bottom: 1px dotted var(--line); }
+    .prose .r { text-align: right; white-space: nowrap; }
+    @media (max-width: 700px) { .prose .r { white-space: normal; } .prose table { width: 100%; } }
+    .prose strong { color: var(--amber); font-weight: 500; }
+    .prose td strong { color: var(--cyan); }
+    .prose img, .prose svg.chart { display: block; max-width: 100%; height: auto; border: 1px solid var(--line); }
+    .prose figure figcaption { color: var(--dim); font-size: .9em; margin-top: .4em; }
+    .gen { color: var(--dim); font-size: .85em; border-top: 1px solid var(--line); padding-top: .6em; }
+  </style>
+</head>
+<body>
+  <main id="main">
+    <div class="bbs">
+      <header class="doc-head">
+        <pre class="logo" aria-hidden="true">  _____ ____ ___   ___   ____
+ / ___// __// _ \ / _ ) /  _/
+/ /__ / _/ / , _// _  |_/ /
+\___//___//_/|_|/____//___/</pre>
+        <p class="sr-only">Cerbi</p>
+        <a class="back" href="../../../"><span class="k">[B]</span> Back to the board</a>
+      </header>
+      <nav class="docnav" aria-label="Cerbi documents"><a href="../index.html"><span class="k">[0]</span> Index</a><a href="../case-study.html"><span class="k">[1]</span> Case study</a><a href="../design.html"><span class="k">[2]</span> Design</a><a href="../cost-and-metrics.html"><span class="k">[3]</span> Metrics</a><a href="../demo-generator.html"><span class="k">[4]</span> Demo generator</a><a href="index.html" aria-current="page"><span class="k">[5]</span> Decisions</a></nav>
+      <article class="prose">
+<h1 id="cerbi-architecture-decision-records">Cerbi: architecture decision records</h1>
+<p>Short records of the decisions that shaped Cerbi. Each gives the context, the decision and its consequences. Dates are when the decision was made. Related: <a href="../design.html">design</a> · <a href="../cost-and-metrics.html">cost and metrics</a>.</p>
+<p><em>An architecture decision record (ADR) is a one-page note written when a design choice is made, so the reasoning survives after the people who made it move on.</em></p>
+<div class="tablewrap"><table>
+<thead><tr><th>#</th><th>Decision</th><th>Date</th></tr></thead>
+<tbody>
+<tr><td>0001</td><td><a href="0001-stub-by-default.html">Stub extraction by default; real reads are opt-in</a></td><td>15 Sep 2026</td></tr>
+<tr><td>0003</td><td><a href="0003-batch-by-default.html">Batch API for routine reads, live reads only when urgent</a></td><td>Oct 2026</td></tr>
+<tr><td>0004</td><td><a href="0004-exact-before-fuzzy.html">Exact aliases before fuzzy matching; sender rules are never self-taught</a></td><td>14 Sep 2026</td></tr>
+<tr><td>0005</td><td><a href="0005-circuit-breaker.html">Stop the run on credential and configuration errors</a></td><td>15 Sep 2026</td></tr>
+<tr><td>0006</td><td><a href="0006-short-reasons-two-queues.html">Short hold reasons, and two hold queues</a></td><td>5–6 Oct 2026</td></tr>
+<tr><td>0007</td><td><a href="0007-idempotent-ledger.html">An idempotent ledger that keeps the raw source</a></td><td>16 Sep 2026</td></tr>
+<tr><td>0008</td><td><a href="0008-one-prompt.html">One prompt for every carrier, with per-carrier context</a></td><td>Sep 2026</td></tr>
+</tbody></table></div>
+      </article>
+      <p class="gen">Generated from <a href="https://github.com/trevordane/trevordane.github.io/blob/main/docs/cerbi/decisions/README.md">decisions/README.md</a> by build.py. Figures as of October 2026.</p>
+    </div>
+  </main>
+  <script src="../../../screen.js"></script>
+</body>
+</html>

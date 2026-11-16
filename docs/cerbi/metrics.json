@@ -1,0 +1,120 @@
+{
+  "as_of": "October 2026",
+  "report_run": "2026-11-10 21:05 UTC",
+  "documents": 9064,
+  "sources": {
+    "Fleet telematics": {
+      "n": 3686,
+      "pct": 40.7
+    },
+    "Saved email files": {
+      "n": 2971,
+      "pct": 32.8
+    },
+    "Shared mailbox": {
+      "n": 2326,
+      "pct": 25.7
+    },
+    "Uploads": {
+      "n": 81,
+      "pct": 0.9
+    }
+  },
+  "outcome": {
+    "loads": 13735,
+    "filed": 13255,
+    "filed_pct": 96.5,
+    "filed_untouched": 7133,
+    "filed_untouched_pct": 51.9,
+    "filed_with_help": 6122,
+    "filed_with_help_pct": 44.6,
+    "limbo": 211,
+    "rejected": 135,
+    "purgatory": 134,
+    "limbo_pct": 1.5,
+    "rejected_pct": 1.0,
+    "purgatory_pct": 1.0
+  },
+  "holds": {
+    "total": 10731,
+    "outcomes": {
+      "Cleared by Cerbi": {
+        "n": 4621,
+        "pct": 43.1
+      },
+      "Replaced by a re-read": {
+        "n": 4588,
+        "pct": 42.8
+      },
+      "Cleared by a person": {
+        "n": 1122,
+        "pct": 10.5
+      },
+      "Still open": {
+        "n": 345,
+        "pct": 3.2
+      },
+      "Discarded": {
+        "n": 55,
+        "pct": 0.5
+      }
+    },
+    "biggest": {
+      "name": "No matching load in the ERP after a re-read",
+      "holds": 3123,
+      "median_h": 47.1,
+      "p90_h": 160.6,
+      "cleared_by_cerbi": 2448
+    }
+  },
+  "speed": {
+    "email_to_decision_h": {
+      "median": 21,
+      "p90": 179
+    },
+    "purgatory_median_h": 47.5
+  },
+  "quality": {
+    "corrected_pct": 2.0,
+    "field_edits": {
+      "BOL number": 220,
+      "load number": 144,
+      "carrier": 93,
+      "order number": 13,
+      "delivery date": 6
+    },
+    "docs_failed": 5
+  },
+  "audit": {
+    "Duplicate invoices closed, not paid twice": 61,
+    "BOL on another invoice, sent to a person to confirm": 37,
+    "Resent with changes, waiting on which copy is owed": 76
+  },
+  "read_paths": [
+    {
+      "path": "Read one at a time",
+      "documents": 3247,
+      "spend_pct": 37
+    },
+    {
+      "path": "Batch read",
+      "documents": 3309,
+      "spend_pct": 27
+    },
+    {
+      "path": "Grouped packet, batch",
+      "documents": 115,
+      "spend_pct": 19
+    },
+    {
+      "path": "Grouped packet",
+      "documents": 86,
+      "spend_pct": 17
+    },
+    {
+      "path": "Telematics (already typed)",
+      "documents": 3686,
+      "spend_pct": 0
+    }
+  ]
+}

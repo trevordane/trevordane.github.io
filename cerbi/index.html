@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cerbi Demo · Trevor Dane Respress</title>
+  <meta name="description" content="A working demo of Cerbi, an AI invoice automation platform, running on generated data. Pick a scenario and seed; every demo can be shared as a link or exported as JSON.">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#04080a">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='6' fill='%2304080a'/%3E%3Crect x='10' y='14' width='22' height='5' fill='%23ffae42'/%3E%3Crect x='10' y='16' width='44' height='1' fill='%2322404a'/%3E%3Ctext x='32' y='50' font-family='Arial,sans-serif' font-size='20' font-weight='700' fill='%23ebe5d8' text-anchor='middle'%3ETDR%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../fonts.css">
+  <link rel="stylesheet" href="../screen.css">
+  <link rel="stylesheet" href="../bbs.css">
+  <style>
+    @font-face { font-family: "Caveat"; src: url("../fonts/caveat-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+
+    /* ---------- the page around the product (board styling) ---------- */
+    .demo-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3em 2ch; }
+    .demo-head h1 { color: var(--cyan); }
+    .demo-head .tag { color: var(--amber); }
+    .back { margin-left: auto; text-decoration: none; } .back .k { color: var(--amber); }
+    .lede { margin: .5em 0 1.1em; color: var(--dim); max-width: 92ch; }
+    button { font: inherit; }
+
+    /* ---------- the product: a light SaaS app on the screen ---------- */
+    .app {
+      --a-bg: #0e151c; --a-card: #141e28; --a-ink: #e4e9ee; --a-muted: #93a2b1; --a-line: #263443;
+      --a-brand: #3cc4b6; --a-brand-soft: rgba(60, 196, 182, .14); --a-ok: #5fd68b; --a-ok-soft: rgba(95, 214, 139, .13);
+      --a-warn: #f2b14c; --a-warn-soft: rgba(242, 177, 76, .14); --a-bad: #ff8a80; --a-info: #8fb0ff; --a-info-soft: rgba(143, 176, 255, .15);
+      color-scheme: dark; background: var(--a-bg); color: var(--a-ink); border-radius: 10px; overflow: hidden;
+      font: 14.5px/1.5 "Plex Sans", system-ui, sans-serif; box-shadow: 0 10px 40px rgba(0, 0, 0, .55); border: 1px solid #22303d;
+    }
+    .app :focus-visible { outline: 2px solid var(--a-info); outline-offset: 2px; }
+    .app b, .app strong { font-weight: 600; }
+    .app .mono { font-family: var(--mono); font-size: .93em; }
+    .app .muted { color: var(--a-muted); }
+    .app-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .4em 1.4em; padding: .55em 1.1em; background: var(--a-card); border-bottom: 1px solid var(--a-line); }
+    .brand { display: flex; align-items: center; gap: .45em; font-weight: 600; font-size: 1.08em; }
+    .brand svg { width: 22px; height: 22px; }
+    .tabs { display: flex; gap: .2em; overflow-x: auto; scrollbar-width: none; }
+    .tabs [role=tab] { background: none; border: 0; border-radius: 6px; padding: .35em .8em; color: var(--a-muted); cursor: pointer; white-space: nowrap; }
+    .tabs [role=tab]:hover { background: var(--a-bg); color: var(--a-ink); }
+    .tabs [role=tab][aria-selected=true] { background: var(--a-brand-soft); color: var(--a-brand); font-weight: 600; }
+    .tabs .count { display: inline-block; min-width: 1.5em; margin-left: .3em; padding: 0 .4em; border-radius: 99px; background: var(--a-warn-soft); color: var(--a-warn); font-size: .82em; font-weight: 600; text-align: center; }
+    .live { margin-left: auto; display: flex; align-items: center; gap: .4em; font-size: .85em; color: var(--a-muted); }
+    .live i { width: .55em; height: .55em; border-radius: 50%; background: var(--a-ok); }
+    .live.paused i { background: var(--a-muted); }
+    .app-hint { padding: .6em 1.1em 0; color: var(--a-muted); font-size: .93em; }
+    .panel { padding: .9em 1.1em 1.2em; min-height: 26em; }
+    .panel:focus { outline: none; }
+    .card { background: var(--a-card); border: 1px solid var(--a-line); border-radius: 8px; }
+
+    .chip { display: inline-block; padding: .05em .6em; border-radius: 99px; font-size: .82em; font-weight: 600; white-space: nowrap; }
+    .chip.ok { background: var(--a-ok-soft); color: var(--a-ok); }
+    .chip.warn { background: var(--a-warn-soft); color: var(--a-warn); }
+    .chip.info { background: var(--a-info-soft); color: var(--a-info); }
+    .chip.mute { background: var(--a-bg); color: var(--a-muted); border: 1px solid var(--a-line); }
+    .chip.q { background: var(--a-bg); color: var(--a-muted); font-weight: 500; }
+    .btn { border: 1px solid var(--a-line); background: var(--a-card); color: var(--a-ink); border-radius: 6px; padding: .35em .9em; cursor: pointer; }
+    .btn:hover:not(:disabled) { border-color: var(--a-muted); }
+    .btn.pri { background: var(--a-brand); border-color: var(--a-brand); color: #04201d; font-weight: 600; }
+    .btn.pri:hover { background: #5fd6c9; }
+    .btn:disabled { opacity: .45; cursor: default; }
+    .linkish { background: none; border: 0; padding: 0; color: var(--a-info); cursor: pointer; text-decoration: underline; text-underline-offset: .15em; }
+    .empty { color: var(--a-muted); padding: 2em 0; text-align: center; }
+
+    /* pipeline */
+    .steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .5em; }
+    .steps li { padding: .55em .8em; }
+    .steps .lbl { font-size: .82em; color: var(--a-muted); text-transform: uppercase; letter-spacing: .04em; }
+    .steps .n { font-size: 1.45em; font-weight: 600; line-height: 1.2; }
+    .steps li.on { border-color: var(--a-info); box-shadow: 0 0 0 3px var(--a-info-soft); }
+    .steps li.on .n { color: var(--a-info); }
+    .steps .done-split { display: flex; flex-wrap: wrap; gap: 0 1em; align-items: baseline; color: var(--a-muted); font-size: .88em; }
+    .steps .done-split .n { font-size: 1.65em; margin-right: .2em; }
+    .steps .done-split .warn { color: var(--a-warn); }
+    .steps .done-split .ok { color: var(--a-ok); }
+    .now { margin-top: .9em; padding: .9em 1.1em; }
+    .now-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3em 1em; }
+    .now-top .who { font-weight: 600; font-size: 1.05em; }
+    .now-top .amt { margin-left: auto; font-weight: 600; }
+    .track { display: flex; align-items: center; margin: .9em 0 .6em; }
+    .track .dot { display: flex; align-items: center; gap: .4em; height: 1.6em; line-height: 1; font-size: .88em; color: var(--a-muted); white-space: nowrap; }
+    .track .dot::before { content: ""; width: .8em; height: .8em; border-radius: 50%; border: 2px solid var(--a-line); background: var(--a-card); }
+    .track .dot.done::before { background: var(--a-brand); border-color: var(--a-brand); }
+    .track .dot.now { color: var(--a-info); font-weight: 600; }
+    .track .dot.now::before { border-color: var(--a-info); box-shadow: 0 0 0 4px var(--a-info-soft); }
+    .track .bar { flex: 1; height: 2px; margin: 0 .6em; background: var(--a-line); }
+    .track .bar.done { background: var(--a-brand); }
+    .now-note { min-height: 1.5em; color: var(--a-ink); }
+    .result { margin-top: .7em; padding: .6em .9em; border-radius: 6px; display: flex; flex-wrap: wrap; align-items: center; gap: .4em 1em; }
+    .result.ok { background: var(--a-ok-soft); } .result.warn { background: var(--a-warn-soft); }
+    .result p { flex: 1 1 24em; }
+    .activity { width: 100%; margin-top: .9em; border-collapse: collapse; }
+    .activity th { text-align: left; font-weight: 500; font-size: .82em; color: var(--a-muted); text-transform: uppercase; letter-spacing: .04em; padding: .5em .8em; border-bottom: 1px solid var(--a-line); }
+    .activity td { padding: .5em .8em; border-bottom: 1px solid var(--a-line); vertical-align: top; }
+    .activity tr:last-child td { border-bottom: 0; }
+    .activity tbody tr { cursor: pointer; }
+    .activity tbody tr:hover { background: var(--a-bg); }
+    .activity .r { text-align: right; white-space: nowrap; }
+    .activity .why { color: var(--a-muted); font-size: .92em; }
+    .activity tr.fresh { animation: arrive .6s ease-out; }
+    @keyframes arrive { from { background: var(--a-info-soft); } }
+
+    /* review */
+    .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: 1em; align-items: start; }
+    .inbox { max-height: 30em; overflow: auto; }
+    .inbox button { display: grid; grid-template-columns: auto 1fr; gap: .1em .8em; width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--a-line); padding: .6em .9em; color: inherit; cursor: pointer; }
+    .inbox li:last-child button { border-bottom: 0; }
+    .inbox button:hover { background: var(--a-bg); }
+    .inbox button.picked { background: var(--a-info-soft); }
+    .inbox .why { grid-column: 1 / -1; color: var(--a-warn); font-size: .9em; }
+    .detail { padding: 1em 1.1em; }
+    .detail > * + * { margin-top: .8em; }
+    .detail h2 { font-size: 1.1em; font-weight: 600; }
+    .reason { padding: .6em .9em; border-radius: 6px; background: var(--a-warn-soft); color: var(--a-warn); font-weight: 500; }
+    .acts { display: flex; flex-wrap: wrap; gap: .5em; }
+    .loads { width: 100%; border-collapse: collapse; font-size: .93em; }
+    .loads th { text-align: left; font-weight: 500; color: var(--a-muted); border-bottom: 1px solid var(--a-line); padding: .3em .5em; }
+    .loads td { padding: .3em .5em; border-bottom: 1px solid var(--a-line); }
+    .loads .r { text-align: right; }
+    .loads tfoot td { border-bottom: 0; font-weight: 600; }
+    .bad { color: var(--a-bad); font-weight: 600; }
+
+    /* rules */
+    .rules { display: grid; gap: .5em; max-width: 52em; }
+    .rule { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .3em 1em; padding: .7em 1em; }
+    .rule.off { opacity: .55; }
+    .rule .q { font-weight: 500; }
+    .rule .sub { grid-column: 2; color: var(--a-muted); font-size: .9em; }
+    .rule .param { grid-column: 2; display: flex; align-items: center; gap: .5em; font-size: .92em; }
+    .rule .param input { width: 6em; font: inherit; color: var(--a-ink); background: var(--a-bg); padding: .15em .4em; border: 1px solid #3a4757; border-radius: 5px; }
+    .rule .held { grid-row: 1; grid-column: 3; }
+    .switch { position: relative; width: 2.4em; height: 1.35em; }
+    .switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+    .switch span { position: absolute; inset: 0; border-radius: 99px; background: #3a4757; transition: background .2s; pointer-events: none; }
+    .switch span::after { content: ""; position: absolute; top: .15em; left: .15em; width: 1.05em; height: 1.05em; border-radius: 50%; background: #fff; transition: transform .2s; }
+    .switch input:checked + span { background: var(--a-brand); }
+    .switch input:checked + span::after { transform: translateX(1.05em); }
+    .switch input:focus-visible + span { outline: 2px solid var(--a-info); outline-offset: 2px; }
+    .rule-end { padding: .7em 1em; color: var(--a-ok); font-weight: 500; }
+    .note { min-height: 1.5em; margin-top: .8em; color: var(--a-info); font-weight: 500; }
+
+    /* document */
+    .doc-nav { display: flex; flex-wrap: wrap; align-items: center; gap: .5em 1em; margin-bottom: 1em; }
+    .doc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5em; align-items: start; }
+    .paper {
+      margin: .3em 0 0; padding: 1.2em 1.5em; color: #2b2a26; font: .9em/1.45 "Plex Sans", sans-serif;
+      background: #e6e1d4; border: 1px solid #cfc8b7; box-shadow: 0 6px 22px rgba(0, 0, 0, .5); transform: rotate(-.5deg);
+    }
+    .paper.q-scan { background: #d9d4c6; filter: contrast(.92) blur(.25px); transform: rotate(.8deg); }
+    .paper.q-handwritten { background: #e1dbc9; transform: rotate(-1.2deg); }
+    .paper .hand { font-family: "Caveat", cursive; font-weight: 700; font-size: 1.35em; color: #1e3a8a; }
+    .p-head { font-weight: 600; font-size: 1.25em; }
+    .p-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 1em; margin: .3em 0 .8em; color: #5b574d; }
+    .p-lines { width: 100%; border-collapse: collapse; }
+    .p-lines th { text-align: left; font-weight: 600; border-bottom: 1px solid #8f897b; }
+    .p-lines td, .p-lines th { padding: .2em .35em; }
+    .p-total td { border-top: 1px solid #8f897b; font-weight: 600; }
+    .scrawl { font-family: "Caveat", cursive; font-weight: 700; color: #1e3a8a; letter-spacing: -.1em; }
+    .paper figcaption { margin-top: .8em; color: #77715f; font-size: .9em; }
+    .paper .reading { outline: 2px solid #2756c5; outline-offset: 2px; background: rgba(39, 86, 197, .14); }
+    .fields > p { font-size: .82em; color: var(--a-muted); text-transform: uppercase; letter-spacing: .04em; }
+    .fields ol { margin: .3em 0 1em; }
+    .fields li { display: grid; grid-template-columns: 6.5em 1fr; gap: .1em 1em; padding: .45em .5em; border-bottom: 1px solid var(--a-line); }
+    .fields li.reading { background: var(--a-info-soft); }
+    .fields .k { color: var(--a-muted); font-size: .9em; }
+    .fields .conf { grid-column: 2; display: flex; align-items: center; gap: .6em; font-size: .85em; color: var(--a-muted); }
+    .fields .meter { width: 7em; height: .4em; border-radius: 99px; background: var(--a-line); overflow: hidden; }
+    .fields .meter i { display: block; height: 100%; background: var(--a-brand); }
+    .fields .meter i.low { background: var(--a-warn); }
+
+    /* ---------- the Demo Builder (board styling again: the tool behind the demo) ---------- */
+    .builder { margin-bottom: 1.2em; border: 1px dashed var(--box); padding: .8em 2ch 1em; }
+    .builder h2 { color: var(--amber); display: inline; }
+    .b-note { margin: .4em 0 .2em; color: var(--ink); }
+    .b-row { display: flex; flex-wrap: wrap; align-items: center; gap: .6em 2ch; margin-top: .7em; }
+    .b-row label { display: flex; align-items: center; gap: 1ch; color: var(--dim); }
+    .builder select, .builder input { font: inherit; color: var(--ink); background: var(--raise); border: 1px solid var(--box); padding: .1em .8ch; }
+    .builder input { width: 10ch; }
+    .bkey { color: var(--ink); background: none; border: 1px solid var(--box); padding: .1em 1ch; cursor: pointer; }
+    .bkey:hover { border-color: var(--amber); color: var(--amber); }
+    .bkey[aria-pressed=true] { background: var(--cyan); color: var(--on-light); border-color: var(--cyan); }
+    .b-blurb { margin-top: .7em; color: var(--ink); max-width: 92ch; }
+    .b-flash { color: var(--cyan); min-width: 14ch; }
+    .b-stats { color: var(--dim); }
+    .builder details { margin-top: .9em; color: var(--dim); max-width: 92ch; }
+    .builder summary { cursor: pointer; color: var(--cyan); }
+    .builder details ul { margin: .4em 0 0 2ch; list-style: "- "; }
+    .builder details.lists { max-width: none; }
+    .builder details.lists > p { margin-top: .4em; max-width: 92ch; }
+    .list-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .8em 2ch; margin-top: .7em; }
+    .list-grid label { grid-column: span 2; }
+    .list-grid label:nth-child(n+4) { grid-column: span 3; }   /* places are long: give them half each */
+    .list-grid textarea { white-space: pre; overflow-x: auto; }
+    .list-grid label { display: grid; grid-template-rows: auto 1fr; gap: .3em; color: var(--ink); }
+    .list-grid label .dim { font-size: .9em; }
+    .list-grid textarea { font: inherit; font-size: .9em; color: var(--ink); background: var(--raise); border: 1px solid var(--box); padding: .3em .8ch; resize: vertical; width: 100%; }
+    .builder details li + li { margin-top: .3em; }
+
+    @media (max-width: 820px) {
+      .steps { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .35em; }
+      .steps li { padding: .35em .5em; }
+      .steps .lbl { font-size: .66em; letter-spacing: 0; }
+      .steps .n { font-size: 1.15em; }
+      .steps li:last-child { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 1em; }
+      .steps .done-split .n { font-size: 1.25em; }
+      .tabs { order: 3; width: 100%; }
+      .tabs [role=tab] { flex: 1; padding: .35em .4em; }
+      .split, .doc { grid-template-columns: minmax(0, 1fr); }
+      .inbox { max-height: 15em; }
+      .track .dot span { display: none; }
+      .track .dot.now span { display: inline; }
+      .activity .why, .activity th.why-h, .activity .r { display: none; }
+      .activity td, .activity th { padding: .5em .55em; }
+      .activity td.mono { white-space: nowrap; font-size: .85em; }
+      .live { margin-left: 0; }
+      .list-grid { grid-template-columns: minmax(0, 1fr); }
+      .list-grid label, .list-grid label:nth-child(n+4) { grid-column: auto; }
+      .app-bar { padding: .55em .8em; } .panel { padding: .8em .8em 1em; } .app-hint { padding: .6em .8em 0; }
+    }
+    @media (prefers-reduced-motion: reduce) { .activity tr.fresh { animation: none; } .switch span, .switch span::after { transition: none; } }
+  </style>
+  <script>document.documentElement.classList.add("js")</script>
+</head>
+<body>
+  <main id="main">
+    <div class="bbs">
+      <header class="demo-head">
+        <h1>CERBI DEMO</h1>
+        <span class="tag">// generated data, nothing real</span>
+        <a class="back" href="../"><span class="k">[B]</span> Back to the board</a>
+      </header>
+      <p class="lede">Cerbi is the invoice automation system I built. This is it running on data from a seeded generator: pick a scenario and the whole demo is rebuilt around that narrative.</p>
+
+      <div id="cerbi">
+        <section class="builder js-only" aria-labelledby="builder-h">
+          <h2 id="builder-h">DEMO BUILDER</h2> <span class="dim">the generator behind this demo</span>
+          <p class="b-note">This page is a demo environment. Change the Scenario, Theme or Seed and the whole demo below is rebuilt.</p>
+          <div class="b-row">
+            <label>Scenario <select data-scenario></select></label>
+            <label>Theme <select data-theme></select></label>
+            <label>Seed <input data-seed inputmode="numeric" autocomplete="off" spellcheck="false"></label>
+            <button class="bkey" data-regen>Regenerate</button>
+            <button class="bkey" data-link>Copy link</button>
+            <button class="bkey" data-export>Export JSON</button>
+            <span class="b-flash" aria-live="polite"></span>
+          </div>
+          <p class="b-blurb"></p>
+          <div class="b-row">
+            <span class="dim">Speed</span>
+            <button class="bkey" data-speed="slow" aria-pressed="false">Slow</button>
+            <button class="bkey" data-speed="normal" aria-pressed="true">Normal</button>
+            <button class="bkey" data-speed="fast" aria-pressed="false">Fast</button>
+            <button class="bkey" data-pause>Pause</button>
+            <button class="bkey" data-next>Next invoice</button>
+            <span class="b-stats"></span>
+          </div>
+          <details class="lists">
+            <summary>Edit the lists <span class="dim">(now using <span class="lists-state"></span>)</span></summary>
+            <p class="dim">A theme is just these lists. Change any of them and apply: the seed keeps the same story, told with your names and places. One item per line. Region and products on a place are optional: each carrier works one region, a region of * ships anywhere, and a place's own products win.</p>
+            <div class="list-grid">
+              <label>Carrier names <span class="dim">(at least 6)</span><textarea data-list="first" rows="8" spellcheck="false"></textarea></label>
+              <label>Carrier types <span class="dim">(Full | short)</span><textarea data-list="types" rows="8" spellcheck="false"></textarea></label>
+              <label><span data-word="products">Products</span> <span class="dim">(at least 1)</span><textarea data-list="products" rows="8" spellcheck="false"></textarea></label>
+              <label><span data-word="origins">Pick-up points</span> <span class="dim">(Name | region | products)</span><textarea data-list="origins" rows="8" spellcheck="false"></textarea></label>
+              <label><span data-word="dests">Delivery points</span> <span class="dim">(Name | region | products)</span><textarea data-list="dests" rows="8" spellcheck="false"></textarea></label>
+            </div>
+            <div class="b-row"><button class="bkey" data-apply>Apply lists</button><button class="bkey" data-reset-lists>Reset to theme</button></div>
+          </details>
+          <details>
+            <summary>How the generator works</summary>
+            <ul>
+              <li><b class="cy">World first.</b> Each seed builds its carriers before any invoice: names, the ways those names get shortened on paper, rates, open orders and the lanes each one runs. Every invoice agrees with that world.</li>
+              <li><b class="cy">Themes are lists.</b> Names, carrier types, products, pick-up and delivery points (with optional regions and products) are plain lists, like the name bases in a fantasy map generator. Names come from their own random stream, so swapping a theme reskins the run without changing what happens.</li>
+              <li><b class="cy">Knobs.</b> A scenario is a few probabilities over a base mix: how many scans or handwritten pages, unknown senders, duplicates, totals that don't add up.</li>
+              <li><b class="cy">Beats.</b> A scenario also pins its key moment to the start, so "Duplicate storm" shows a duplicate in the first minute instead of whenever chance allows.</li>
+              <li><b class="cy">Same seed, same demo.</b> Copy the link and anyone gets exactly this run. Export JSON gives the full dataset. <a href="generator.js">Read generator.js</a>.</li>
+            </ul>
+          </details>
+        </section>
+
+        <div class="app js-only">
+          <div class="app-bar">
+            <span class="brand"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" fill="#0e7c74"/><path d="M7 8h7M7 12h10M7 16h5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>Cerbi</span>
+            <nav class="tabs" role="tablist" aria-label="Cerbi views">
+              <button role="tab" id="tab-pipeline" data-tab="pipeline" aria-selected="true">Pipeline</button>
+              <button role="tab" id="tab-review" data-tab="review" aria-selected="false">Review<span class="count">0</span></button>
+              <button role="tab" id="tab-rules" data-tab="rules" aria-selected="false">Rules</button>
+              <button role="tab" id="tab-document" data-tab="document" aria-selected="false">Document</button>
+            </nav>
+            <span class="live" aria-live="off"><i></i><span>Live</span></span>
+          </div>
+          <p class="app-hint"></p>
+          <section class="panel" role="tabpanel" tabindex="-1" aria-labelledby="tab-pipeline"></section>
+        </div>
+
+      </div>
+      <noscript><p class="lede">The demo runs in your browser and needs JavaScript. <a href="../#work">Read about Cerbi on the board</a> instead.</p></noscript>
+    </div>
+  </main>
+  <script src="generator.js"></script>
+  <script src="cerbi.js"></script>
+  <script src="../screen.js"></script>
+</body>
+</html>
