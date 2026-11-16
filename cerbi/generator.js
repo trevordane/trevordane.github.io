@@ -258,6 +258,7 @@
       label: "Monday backlog",
       blurb: "The weekend's paperwork lands at once: a long history, lots of scans and a full review inbox.",
       knobs: { history: 30, quality: { clean: 2, scan: 5, handwritten: 2 }, mismatch: 0.08 },
+      today: [300, 420],          // documents already in by the time the demo opens
       beats: [{ at: 0, kind: "unreadable" }],
     },
     "duplicate-storm": {
@@ -411,10 +412,20 @@
       v.phase = live < 0 ? "history" : "live";
       state.invoices.push(v);
     }
+    // The day so far: what came in before the demo opened, so the counters read like a real
+    // morning (a weekday runs about 380 documents). Its own stream, so it never moves the story.
+    const day = makeRng(`${name}:${seed}:day`);
+    const [lo, hi] = sc.today || [140, 240];
+    const received = day.int(lo, hi);
+    const today = {
+      received,
+      filed: Math.round(received * day.between(0.78, 0.84)),
+      approved: Math.round(received * day.between(0.07, 0.1)),
+    };
     // nextRef was only a counter for building; it is not part of the world
     world.carriers.forEach((c) => { delete c.nextRef; });
     const themeOut = { id: T.id, label: T.label, custom: !!T.custom, unit: T.unit, words: T.words, blurbs: T.blurbs || {}, lists: Object.fromEntries(LISTS.map((key) => [key, T[key]])) };
-    return { generator: "cerbi-demo", version: 2, seed: String(seed), scenario: name, label: sc.label, theme: themeOut, world, invoices: state.invoices };
+    return { generator: "cerbi-demo", version: 3, seed: String(seed), scenario: name, label: sc.label, theme: themeOut, world, today, invoices: state.invoices };
   }
 
   const api = { generate, SCENARIOS, THEMES, LISTS, BASE, makeRng };
