@@ -190,7 +190,8 @@
       background: linear-gradient(to bottom, transparent calc(33.3% - 2px), rgba(0,0,0,.18) 33.3%, rgba(255,255,255,.5) calc(33.3% + 1px), transparent calc(33.3% + 4px),
                                               transparent calc(66.6% - 2px), rgba(0,0,0,.18) 66.6%, rgba(255,255,255,.5) calc(66.6% + 1px), transparent calc(66.6% + 4px)); }
     .p-ring { position: absolute; aspect-ratio: 300 / 260; pointer-events: none; mix-blend-mode: multiply; transform: rotate(var(--rot));
-      background: url("../assets/paper/coffee-rings.jpg") center / contain no-repeat; }
+      background: url("../assets/paper/coffee-rings.jpg") center / contain no-repeat;
+      -webkit-mask-image: radial-gradient(closest-side, #000 88%, transparent); mask-image: radial-gradient(closest-side, #000 88%, transparent); }
     .p-stamp {
       position: absolute; transform: rotate(var(--r)); padding: .2em .7em; border: 3px double rgba(178, 34, 34, .75); border-radius: 4px;
       color: rgba(178, 34, 34, .75); font: 800 1.35em/1.05 "Plex Mono", monospace; letter-spacing: .14em; text-align: center; mix-blend-mode: multiply; pointer-events: none;
