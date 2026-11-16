@@ -100,7 +100,7 @@ read.
 
 About **2% of documents, the large grouped packets, take 36% of the
 spend.** A cap on parts, or a cheaper first pass for them, is where cost
-would move. A batch read costs about 27% less a document than a single
+would move. A batch read costs about 28% less a document than a single
 read.
 
 ## 6. Freight audit

@@ -86,6 +86,14 @@
     body.roomy .job + .job { margin-top: 14px; }
     body.roomy .short .job + .job { margin-top: 0; }   /* side-by-side pair stays aligned */
     body.roomy .bul li + li { margin-top: 2px; }
+    /* ?theme=light: a plain print / ATS copy: white paper, dark ink, larger text, short jobs stacked */
+    body.light { --bg: #fff; --raise: #f3f5f5; --line: #b7c3c5; --box: #7d8e90; --ink: #15191a;
+      --dim: #46585a; --cyan: #0a5c60; --amber: #8a4a00; font-size: 10.4px; }
+    body.light.roomy .head { margin: 16px 0 8px; }
+    body.light .summary { font-size: 10.8px; }
+    body.light .shade { display: none; }
+    body.light .short { grid-template-columns: 1fr; }
+    body.light .short .job + .job { margin-top: 6px; }
   </style>
 </head>
 <body>
@@ -122,9 +130,9 @@
       <p class="as"><b>Business Systems Analyst</b> (2026-10 ..), promoted from <b>Freight Coordinator</b> (2026-07) / New Bern, NC</p>
       <ul class="bul">
         <li>Built Cerbi, a Python and Anthropic Claude API platform that reads scanned, handwritten and emailed carrier documents and files about 13,000 loads a month from about 9,000 documents.</li>
-                <li>Built a rules engine, duplicate checks and review inbox: clean invoices file on their own, the rest go to a person.</li>
+                <li>Built a rules engine, duplicate checks and review inbox: clean invoices file and are batched for ERP import after a person checks them; the rest go to review.</li>
         <li>Connected Cerbi to Claude agents through MCP servers; run its development with Claude Code agents and PR review.</li>
-        <li>Built Nexus, a TypeScript alert hub on Cloudflare Workers where AI agents triage issues and a person approves by phone.</li>
+        <li>Building Nexus, a TypeScript alert hub on Cloudflare Workers where AI agents triage issues and a person approves by phone.</li>
         <li>Integrated Microsoft Graph, the Samsara API and the company’s ERP; deployed on IIS with CI on GitHub Actions.</li>
         <li>Built a driver-ticket reader and a pay-rate lookup tool for the company’s trucking carrier, both in daily use.</li>
         <li>Building lane pricing from regional per-mile baselines and historical lane rates, tying charges to driver pay.</li>
@@ -188,6 +196,8 @@
       document.body.classList.add("roomy");
       document.getElementById("site-link").href = "https://trevordane.github.io/";
     }
+
+    if (new URLSearchParams(location.search).get("theme") === "light") document.body.classList.add("light");
 
     // Draw the ASCII banner as an image (4x, so it prints sharp). As text, a résumé
     // parser would read it as slashes; the name is real text in the line below.

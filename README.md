@@ -1,6 +1,6 @@
 # Trevor Dane Respress — portfolio
 
-Source of <https://trevordane.github.io/> (after the repo rename below). A
+Source of <https://trevordane.github.io/>. A
 static site with no build step, no framework and no tracking. Fonts are
 self-hosted.
 
@@ -11,7 +11,9 @@ self-hosted.
 | `bbs.js` | One board screen at a time: number keys or clicks, W for Writing, Q/Esc back to the menu, D for the simulation, R for the résumé. |
 | `banner.js` | Banner animation: a random intro on each load (type, decode, scan, boot), then a shimmer every 5s with a glitch in its place every 3rd–5th time. `?intro=<name>` forces an intro for testing. |
 | `sound.js` | Optional background sound (off until the visitor turns it on: footer switch or S key; remembered): a hum + hiss loop, and a static burst on each banner glitch. Browsers block sound until the first click, tap or key, so a remembered "on" reads "on, click to start" until then. |
-| `cerbi/` | Interactive Cerbi simulation (fictional data), linked from [1] Work. Each tab has an About panel (copy in `ABOUT` in `cerbi.js`); pace is set by `STEP_MS` and `ARRIVE_MS` at the top of the same file. |
+| `cerbi/` | Interactive Cerbi demo (generated, fictional data), linked from [1] Work. `generator.js` builds each run from a scenario, theme and seed; `cerbi.js` plays it back (pace is `T` and `SPEED` at the top). |
+| `docs/cerbi/` | Cerbi case study, design document, decision records and metrics. Built from Markdown by `build.py`. |
+| `assets/paper/` | Paper textures for the demo's scanned pages (public domain; sources in its `LICENSES.txt`). |
 | `screen.css` | Monitor housing and frosted glass around the board. |
 | `fonts.css` | `@font-face` for every font, shared by the site and the résumé. |
 | `site.js` | Footer year. |
@@ -61,14 +63,7 @@ font preload on `file://` URLs.
 python -m http.server 8000   # then http://localhost:8000/
 ```
 
-## Publishing on GitHub Pages
+## Publishing
 
-1. **Rename the repo** to `trevordane.github.io` (Settings → General →
-   Repository name). A repo with that exact name is served at the root URL.
-2. **Default branch → `main`** (Settings → General → Default branch). The
-   site lives on `main`; the old default branch holds the previous version.
-3. **Settings → Pages → Build and deployment → Source: GitHub Actions.**
-   `.github/workflows/pages.yml` publishes the repo root on every push to
-   `main`.
-4. On a free plan Pages needs the repo to be public (Settings → General →
-   Danger Zone → Change visibility). Nothing in it is private.
+GitHub Pages builds from GitHub Actions: `.github/workflows/pages.yml`
+publishes the repo root on every push to `main`.
