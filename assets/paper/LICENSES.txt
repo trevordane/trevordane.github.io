@@ -1,0 +1,9 @@
+Paper textures used on the Cerbi Demo's simulated documents.
+Both are processed versions (cropped, greyscaled or levelled, downscaled) of
+photos from Photos Public Domain (photos-public-domain.com), which releases its
+photos into the public domain, free for any use including commercial.
+
+wrinkles.jpg      from "White Wrinkled Paper Texture"
+                  https://www.photos-public-domain.com/2018/07/24/white-wrinkled-paper-texture/
+coffee-rings.jpg  from "Two Circles Stained on Grungy White Cardboard"
+                  https://www.photos-public-domain.com/2012/04/26/two-circles-stained-on-grungy-white-cardboard/

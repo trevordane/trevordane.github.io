@@ -278,6 +278,10 @@
       fax: v.quality === "scan" && v.source === "email" && r.chance(0.5)
         ? `${MONTHS[Number(m) - 1]}-${d}-${y} ${String(r.int(7, 16)).padStart(2, "0")}:${String(r.int(0, 59)).padStart(2, "0")}   FROM: ${r.pick(["252", "843", "757"])} 555 01${String(r.int(0, 99)).padStart(2, "0")}   P.001/00${v.loads.length > 1 ? 2 : 1}` : "",
       tilt: v.quality === "clean" ? 0 : r.between(-1.4, 1.4).toFixed(2),
+      // Handling: creases, tri-fold lines from the envelope, now and then a coffee ring
+      wrinkle: r.between(0.18, 0.42).toFixed(2), flip: r.chance(0.5), shift: `${r.int(0, 100)}% ${r.int(0, 100)}%`,
+      folds: r.chance(0.55),
+      ring: r.chance(0.3) ? { x: r.int(-10, 60), y: r.int(-8, 70), rot: r.int(0, 359), size: r.int(38, 62), alpha: r.between(0.35, 0.7).toFixed(2) } : null,
     };
   }
   function viewDocument() {
@@ -315,6 +319,8 @@
           ${'<tr class="p-blank"><td colspan="7">&nbsp;</td></tr>'.repeat(blank)}
         </tbody><tfoot><tr ${hit("total")}><td colspan="6" class="r">TOTAL DUE</td><td class="r">${h(money(v.total))}</td></tr></tfoot></table>
         <p class="p-remit">Please remit to ${esc(v.header)}, ${P.street}, ${P.town}. Reference invoice number with payment. Thank you for your business.</p>
+        ${v.quality !== "clean" ? `<div class="p-grunge${P.flip ? " flip" : ""}${P.folds ? " folds" : ""}" style="--wr:${P.wrinkle};--at:${P.shift}" aria-hidden="true"></div>` : ""}
+        ${P.ring && v.quality !== "clean" ? `<div class="p-ring" style="left:${P.ring.x}%;top:${P.ring.y}%;width:${P.ring.size}%;--rot:${P.ring.rot}deg;opacity:${P.ring.alpha}" aria-hidden="true"></div>` : ""}
         ${P.stamp ? `<div class="p-stamp" style="left:${P.stampAt[0]}%;top:${P.stampAt[1]}%;--r:${P.stampAt[2]}deg">RECEIVED<span>${P.stampDate}</span></div>` : ""}
       </div>`;
     return `<div class="doc-nav"><button class="btn" data-step="-1" ${i ? "" : "disabled"}>&larr; Previous</button>
