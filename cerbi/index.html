@@ -125,7 +125,7 @@
     /* rules */
     .rules { display: grid; gap: .5em; max-width: 52em; }
     .rule { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .3em 1em; padding: .7em 1em; }
-    .rule.off { opacity: .55; }
+    .rule.off { opacity: .72; }
     .rule .q { font-weight: 500; }
     .rule .sub { grid-column: 2; color: var(--a-muted); font-size: .9em; }
     .rule .param { grid-column: 2; display: flex; align-items: center; gap: .5em; font-size: .92em; }
@@ -148,6 +148,7 @@
     .paper { margin: .3em 0 0; container-type: inline-size; }
     .paper figcaption { margin-top: .7em; color: var(--a-muted); font-size: .85em; }
     .doc-tip { font-size: .85em; }
+    .loads-wrap { overflow-x: auto; }
     .sheet {
       position: relative; aspect-ratio: 8.5 / 11; overflow: hidden; padding: 6% 6.5%;
       color: #1d1d1b; background: #fdfdfa; font: 400 clamp(8px, 2.25cqi, 14px)/1.4 "Plex Sans", Arial, sans-serif;
@@ -204,7 +205,8 @@
     .sheet .hit { outline: 1px dashed rgba(39, 86, 197, .55); outline-offset: 1px; cursor: pointer; }
     .sheet .hit:hover { background: rgba(39, 86, 197, .08); }
     .sheet .hit.sel { outline: 2px solid #2756c5; outline-offset: 1px; background: rgba(39, 86, 197, .16); }
-    .sheet .hit:focus-visible, .fields li.hit:focus-visible { outline: 2px solid #f59e0b; outline-offset: 2px; }
+    .sheet .hit:focus-visible { outline: 3px solid #1d3f9c; outline-offset: 2px; box-shadow: 0 0 0 5px rgba(255, 255, 255, .85); }
+    .fields li.hit:focus-visible { outline: 2px solid var(--a-info); outline-offset: 2px; }
     .fields > p { font-size: .82em; color: var(--a-muted); text-transform: uppercase; letter-spacing: .04em; }
     .fields ol { margin: .3em 0 1em; }
     .fields li { display: grid; grid-template-columns: 6.5em 1fr; gap: .1em 1em; padding: .45em .5em; border-bottom: 1px solid var(--a-line); }
@@ -255,6 +257,7 @@
       .tabs { order: 3; width: 100%; }
       .tabs [role=tab] { flex: 1; padding: .35em .4em; }
       .split, .doc { grid-template-columns: minmax(0, 1fr); }
+      #cerbi { display: flex; flex-direction: column; } #cerbi .builder { order: 2; margin: 1.2em 0 0; }   /* phones: the product first, its controls after */
       .inbox { max-height: 15em; }
       .track .dot span { display: none; }
       .track .dot.now span { display: inline; }
@@ -278,7 +281,7 @@
         <span class="tag">// generated data, nothing real</span>
         <a class="back" href="../"><span class="k">[B]</span> Back to the board</a>
       </header>
-      <p class="lede">Cerbi is the invoice automation system I built. This is it running on data from a seeded generator: pick a scenario and the whole demo is rebuilt around that narrative.</p>
+      <p class="lede">Cerbi is the invoice automation system I built. This is it running on data from a seeded generator: pick a scenario in the Demo Builder and the whole demo is rebuilt around that narrative.</p>
 
       <div id="cerbi">
         <section class="builder js-only" aria-labelledby="builder-h">

@@ -20,10 +20,11 @@ live is planned.
 
 ## Consequences
 
-- Batch reads cost half the live rate per token. In production a batched
-  document costs about half as much as a live one, and 72% of documents now
-  go by batch. (The early projection, from a 51-document sample, was
-  lower; measured cost came in about 1.75× higher.)
+- Batch reads cost half the live rate per token. In October a batched
+  document cost about 28% less than a live one (batches carry the longer
+  documents), and about half of the documents that needed a read went by
+  batch. (The early projection, from a 51-document sample, was lower;
+  measured cost came in at about 1.75× the estimate.)
 - Batches have to survive partial failure: a failed part is retried, and
   page tags already paid for are reused rather than bought again.
 - Planning and estimates live next to the cap, so a mis-sized batch is

@@ -58,20 +58,20 @@
       <section class="screen" id="work" aria-labelledby="work-h">
         <h2 class="head" id="work-h"><span>[1] WORK : AI INVOICE AUTOMATION (CERBI)</span><span class="rule" aria-hidden="true"></span></h2>
         <p class="body"><span class="name">Titan Aviation Fuels</span> <span class="dim">/ Python, Claude API / in production</span></p>
-        <p class="body">An invoice automation platform. It reads scanned and handwritten carrier invoices, works out what each one is, files the complete ones and imports them into the ERP, and puts the rest in front of a person with the reason it stopped.</p>
+        <p class="body">An invoice automation platform. It reads scanned and handwritten carrier invoices, works out what each one is, files the complete ones and organizes them into ERP import batches that a person checks, and puts the rest in front of a person with the reason it stopped.</p>
         <p class="body"><a href="cerbi/" class="demo-link"><span class="am">[&gt;]</span> Try the invoice automation simulation (Cerbi)</a> <span class="dim">(interactive, fictional data)</span></p>
         <dl class="kv">
-          <dt>THROUGHPUT</dt><dd>hundreds of invoices a day</dd>
+          <dt>THROUGHPUT</dt><dd>hundreds of documents a day</dd>
           <dt>INPUT</dt><dd>scanned and handwritten, not just clean PDFs</dd>
         </dl>
         <h3 class="dim">-- ONE INVOICE, END TO END --</h3>
         <ol class="flow">
           <li><span class="n">01</span> <b>Ingest</b> freight paperwork from email (shared mailboxes through Microsoft Graph), carrier and telematics APIs, and drop folders.</li>
           <li><span class="n">02</span> <b>Identify</b> who sent each invoice, using sender rules, known aliases and the ERP’s orders.</li>
-          <li><span class="n">03</span> <b>Extract</b> the loads on every page: each document goes to Anthropic’s Claude API with a prompt for its document type, and comes back as structured JSON. Prompts are built for caching and documents are sent in batches to keep cost down.</li>
+          <li><span class="n">03</span> <b>Extract</b> the loads on every page: each document goes to Anthropic’s Claude API with one shared prompt plus what is known about that carrier, and comes back as structured JSON. Prompts are built for caching and documents are sent in batches to keep cost down.</li>
           <li><span class="n">04</span> <b>Validate</b> each invoice against the business rules, in order.</li>
           <li><span class="n">05</span> <b>Review</b> anything incomplete in a review inbox, with a short reason why it stopped.</li>
-          <li><span class="n">06</span> <b>File</b> everything complete, and import it into the ERP.</li>
+          <li><span class="n">06</span> <b>File</b> everything complete, and organize it into ERP import batches that a person checks before they go in.</li>
         </ol>
         <h3 class="dim">-- DESIGN DECISIONS --</h3>
         <ul class="bul dim-list">

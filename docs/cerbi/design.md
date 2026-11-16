@@ -1,8 +1,8 @@
 # Cerbi: design document
 
 **Author:** Trevor Dane Respress, Business Systems Analyst, Titan Aviation Fuels ·
-**Status:** in production since September 2026; ERP import built, production
-cutover pending · **As of:** 30 October 2026
+**Status:** in production since September 2026; ERP import batches built and
+checked by a person, production cutover pending · **As of:** 10 November 2026
 
 *This is the portfolio version of Cerbi's internal design document. The
 internal one is about 6,000 lines and lives in a private repository. Names
@@ -87,8 +87,7 @@ schema changed. Cerbi replaced it.
 Cerbi is one flat Python package with no web framework and no build step. It
 runs as a service on a Windows server, stores its state in SQLite, and serves
 a single-page review app to staff signed in with their Windows accounts. The
-internal web platform it files into (built by a teammate) runs on the same
-server.
+internal web platform it files into was built by a teammate.
 
 | Stage | What it does | Key design choice |
 |---|---|---|
@@ -98,7 +97,7 @@ server.
 | 04 Extract | Reads each group into structured JSON. | Native PDF document blocks rather than rasterised images (cheaper and more accurate); a fixed output schema; no generated placeholders; requests that cannot succeed are never sent. |
 | 05 Identify | Works out the carrier and matches each load to the ERP's records. | Exact alias table first, fuzzy match second, person third. Fuzzy matching alone was *confidently wrong* 4 times in 94 on real carrier names. |
 | 06 Rules | Runs every check and decides the outcome. | Every check that can stop a load has a name, and a held load carries it. |
-| Outcome | Filed, Limbo or Purgatory. | A filed load's paperwork is copied into its load folder with a manifest and SHA-256 per file; an ERP import batch is generated from filed invoices. |
+| Outcome | Filed, Limbo or Purgatory. | A filed load's paperwork is copied into its load folder with a manifest and SHA-256 per file; filed invoices are organized into an ERP import batch that a person checks before it goes in. |
 
 ### 4.1 Rules
 
@@ -122,17 +121,15 @@ closes, and a load that now matches the ERP files. See
 [ADR 0006](decisions/0006-short-reasons-two-queues.md).
 
 In production about half of all loads are held at least once, mostly
-because an invoice and its BOL arrive separately. Of the holds closed with
-a decision, 52.6% were cleared by Cerbi itself and 42.7% by a person; the
-median hold clears in 21.6 hours. Paperwork-timing holds mostly clear
+because an invoice and its BOL arrive separately. In October about 4 in 10 holds were cleared by Cerbi itself, about 4 in 10
+were replaced by a fresh read, and about 1 in 10 needed a person. Paperwork-timing holds mostly clear
 themselves; missing information (carrier, delivery date, BOL number) almost
 always needs a person.
 
 ### 4.3 Extraction
 
-- **Model:** Claude Sonnet 5 at $2 per million input tokens and $10 per
-  million output tokens, with Claude Haiku 4.5 for page tagging and
-  signature checks.
+- **Model:** Claude Sonnet for reading, with Claude Haiku for page tagging
+  and signature checks.
 - **Input:** native PDF document blocks, uploaded through the Files API when
   large. An early version rasterised pages to PNG at 200 dpi; it paid for
   detail the API downsampled away and turned a 53 KB PDF into a 134 KB
@@ -143,8 +140,8 @@ always needs a person.
   context added, rather than per-carrier prompts that drift apart.
 - **The read is a suggestion.** Extraction runs even when the sender is
   unknown, and its read of the vendor pre-fills the review card. A person
-  confirms with one click instead of searching a 3,000-row vendor list.
-- **Measured accuracy** on 51 labelled documents: vendor correct 92%, carrier
+  confirms with one click instead of searching a 3,125-row vendor list.
+- **Evaluation-set results** (51 labelled documents, a small sample): vendor correct 92%, carrier
   ID resolved 96%, delivery state 96%, delivery date 94%, BOL number 92%,
   invoice number 84% (coverage, not correctness, for the last five).
 
@@ -157,8 +154,8 @@ cap. A batch is planned, priced, trimmed to its cap and then submitted;
 results are collected into the ledger with the real token usage. See
 [ADR 0003](decisions/0003-batch-by-default.md).
 
-In production 72% of documents are read by batch, at about half the cost
-of a live read. Turnaround from email to filed or held was a median of 21
+In October about half of the documents that needed a read went by batch,
+at about 28% less per document than a live read. Turnaround from email to filed or held was a median of 21
 hours in October, the first month of day-to-day running.
 
 ### 4.5 The review app
@@ -196,7 +193,7 @@ The first real run taught most of this section. Within 20 minutes of the
 first live extraction, the API key was disabled. The cause was not volume
 (the run had spent almost nothing) but shape: the per-document error handler treated an
 authentication failure like a bad PDF and moved on, so one rejected request
-became about 157 in a row, which looks like credential probing from outside.
+became about 157 failed requests in a row, which looks like credential probing from outside.
 Four rules came out of it, all built:
 
 1. **Debug with one document.** `run.py document <file>` drives one file end
@@ -220,9 +217,8 @@ Also:
   and a pause.
 - **Nightly ledger backups** taken by the app itself, plus one before every
   update.
-- **Gentle on the shared server.** After three review agents sent the live
-  app about 1,500 requests in a few minutes and took it down for 40
-  minutes, bulk reads come from one export request and are analysed
+- **Gentle on the live app.** After review agents once sent the live app
+  enough requests in a few minutes to take it down, bulk reads come from one export request and are analysed
   locally; spot checks are one at a time, at most about 50 per task.
 
 ## 7. Testing and quality
@@ -238,8 +234,8 @@ Also:
 - **UI rules as tests.** The review app's style rules (tokens, button
   classes, an inline-style budget that can only go down) are checked in CI.
 - **Reviews from exports.** Periodic reviews read full Ledger and Purgatory
-  exports and rank findings; the 6 October review drove the drop in
-  Purgatory described in the [metrics](cost-and-metrics.md).
+  exports and rank findings; the 6 October review led to the rule changes
+  that shrank Purgatory (see [ADR 0006](decisions/0006-short-reasons-two-queues.md)).
 - **An analytics export** reads the whole ledger in one pass: volumes,
   outcomes, holds by reason, turnaround, cost by read path, failures and
   corrections. In October: 5 of 9,064 documents failed outright; people
@@ -264,8 +260,8 @@ Also:
 
 | Item | Why | Expected effect |
 |---|---|---|
-| ERP import in production | Staff still key invoices by hand | the largest remaining time saving |
-| Cheaper large packets | 2% of documents (long packets split into invoice groups) are 38% of model spend | the largest single cost reduction available |
+| ERP import cutover | Filed invoices are organized into import batches that a person checks; the cutover to production import is pending | the largest remaining time saving |
+| Cheaper large packets | 2% of documents (long packets split into invoice groups) are 36% of model spend | the largest single cost reduction available |
 | Prompt caching | The prompt is identical on every call, and repeated for every group of a packet | cuts the input side; output is about half the cost |
 | Fleet documents straight from telematics | The owned fleet's tickets are retyped | removes a second keying step |
 | Local vision model research | Spend, data residency | research only; measured with the same evaluation set |
@@ -277,7 +273,8 @@ Also:
    came from operations staff reading hold reasons and asking for a rule to
    change, not from model changes.
 2. **Measure before you budget.** The cost estimate, derived from documented
-   image-token formulas, was low by about 1.75×. The measured figure is the
+   image-token formulas, was low: measured cost came in at about 1.75× the
+   estimate. The measured figure is the
    one in every plan now.
 3. **Fuzzy matching fails confidently.** Raising a threshold cannot fix a
    name that genuinely sits closer to the wrong carrier. An exact alias

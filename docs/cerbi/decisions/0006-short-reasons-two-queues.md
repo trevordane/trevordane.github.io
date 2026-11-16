@@ -22,9 +22,10 @@ simply early (a BOL before its invoice).
 ## Consequences
 
 - Purgatory reads as a grouped to-do list: a count under each short reason.
-- Purgatory fell from 4,645 loads (12.6%) on 6 Oct to 1,358 (2.7%) on
-  30 Oct, while total loads grew 35%.
-- Of holds closed with a decision, 52.6% were cleared by Cerbi itself and
-  42.7% by a person; the median hold clears in 21.6 hours.
+- Counting every load since launch, not one month, Purgatory fell from
+  4,645 loads (12.6%) on 6 Oct to 1,358 (2.7%) on 30 Oct, while total loads
+  grew 35%.
+- In October about 4 in 10 holds were cleared by Cerbi itself and about 4 in
+  10 were replaced by a fresh read; about 1 in 10 needed a person.
 - Limbo has to be watched for paperwork that never comes; an aged-holds
   report covers that.

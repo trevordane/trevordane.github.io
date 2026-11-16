@@ -428,7 +428,7 @@
     return { generator: "cerbi-demo", version: 3, seed: String(seed), scenario: name, label: sc.label, theme: themeOut, world, today, invoices: state.invoices };
   }
 
-  const api = { generate, SCENARIOS, THEMES, LISTS, BASE, makeRng };
+  const api = { generate, SCENARIOS, THEMES, LISTS, BASE, MIN, makeRng };
   if (typeof module === "object" && module.exports) module.exports = api;
   else global.CerbiGen = api;
 })(typeof window !== "undefined" ? window : globalThis);

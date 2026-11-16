@@ -121,9 +121,9 @@
 
   <rect class="rail" x="556" y="76" width="184" height="182"/>
   <text class="ha" x="570" y="100">COST</text>
-  <text class="t" x="570" y="124">batch read: about</text>
-  <text class="t" x="570" y="144">half the live cost</text>
-  <text class="t" x="570" y="164">72% of docs batched</text>
+  <text class="t" x="570" y="124">batch read: ~28%</text>
+  <text class="t" x="570" y="144">less per document</text>
+  <text class="t" x="570" y="164">~half of reads batched</text>
   <text class="s" x="570" y="190">large packets are</text>
   <text class="s" x="570" y="208">2% of documents but</text>
   <text class="s" x="570" y="226">36% of model spend</text>

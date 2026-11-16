@@ -91,7 +91,7 @@
       const p = r.param && r.param.value;
       if (!r.pass(v, p)) return { outcome: "review", rule: r.id, reason: r.why(v, p) };
     }
-    return { outcome: "filed", rule: null, reason: "Passed every rule; filed and imported." };
+    return { outcome: "filed", rule: null, reason: "Passed every rule; filed and added to an import batch for a person to check." };
   }
   function reroute() {
     let moved = 0;
@@ -165,9 +165,11 @@
   // "Next invoice": finish the one in flight now, or start the next one straight away
   function skip() {
     run++;
-    if (current && !current.outcome) { current.stage = STAGES.length; Object.assign(current, route(current)); }
-    render();
-    next();
+    if (current && !current.outcome) {   // finish it and leave its result on screen
+      current.stage = STAGES.length; Object.assign(current, route(current));
+      render();
+      later(next, T.result);
+    } else next();
   }
 
   // ---------- views ----------
@@ -205,10 +207,10 @@
   }
 
   function loadsTable(v) {
-    return `<table class="loads"><thead><tr><th>Pg</th><th>BOL</th><th>${esc(data.theme.words.products)}</th><th>Lane</th><th class="r">${cap(data.theme.unit[1])}</th><th class="r">Amount</th></tr></thead><tbody>${
+    return `<div class="loads-wrap"><table class="loads"><thead><tr><th>Pg</th><th>BOL</th><th>${esc(data.theme.words.products)}</th><th>Lane</th><th class="r">${cap(data.theme.unit[1])}</th><th class="r">Amount</th></tr></thead><tbody>${
       v.loads.map((l) => `<tr><td>${l.page}</td><td class="mono">${l.bol}</td><td>${esc(l.product)}</td><td>${esc(l.from)} &rarr; ${esc(l.to)}</td>
         <td class="r ${l.readable ? "" : "bad"}">${l.readable ? l.qty.toLocaleString() : "unreadable"}</td><td class="r">${money(l.amount)}</td></tr>`).join("")
-    }</tbody><tfoot><tr><td colspan="5">Invoice total</td><td class="r ${Math.abs(v.total - v.sum) > 0.01 ? "bad" : ""}">${money(v.total)}</td></tr></tfoot></table>`;
+    }</tbody><tfoot><tr><td colspan="5">Invoice total</td><td class="r ${Math.abs(v.total - v.sum) > 0.01 ? "bad" : ""}">${money(v.total)}</td></tr></tfoot></table></div>`;
   }
 
   function viewReview() {
@@ -249,7 +251,7 @@
         <span class="held"><span class="chip ${heldBy(r.id) ? "warn" : "mute"}" data-held="${r.id}">${heldBy(r.id)} held</span></span>
         ${r.param ? `<label class="param">${r.param.label} <input type="number" data-param="${r.id}" value="${r.param.value}" step="${r.param.step}" min="${r.param.min}" max="${r.param.max}">${r.param.unit}</label>` : ""}
       </div>`).join("")}
-      <p class="rule-end">Passes every rule in use &rarr; filed and imported</p>
+      <p class="rule-end">Passes every rule in use &rarr; filed and batched for import</p>
       <p class="note" aria-live="polite">${esc(note)}</p></div>`;
   }
 
@@ -286,7 +288,7 @@
       handDate: `${Number(m)}/${Number(d)}/${y.slice(2)}`,
       stampDate: `${MONTHS[Number(m) - 1]} ${d} ${y}`,
       stamp: v.quality !== "clean" && r.chance(0.7),
-      stampAt: [r.int(52, 70), r.int(56, 74), r.between(-14, 9).toFixed(1)],
+      stampAt: [r.int(52, 70), r.int(68, 82), r.between(-14, 9).toFixed(1)],
       fax: v.quality === "scan" && v.source === "email" && r.chance(0.5)
         ? `${MONTHS[Number(m) - 1]}-${d}-${y} ${String(r.int(7, 16)).padStart(2, "0")}:${String(r.int(0, 59)).padStart(2, "0")}   FROM: ${r.pick(["252", "843", "757"])} 555 01${String(r.int(0, 99)).padStart(2, "0")}   P.001/00${v.loads.length > 1 ? 2 : 1}` : "",
       tilt: v.quality === "clean" ? 0 : r.between(-1.4, 1.4).toFixed(2),
@@ -315,7 +317,7 @@
         <span class="conf"><span class="meter"><i class="${conf < 0.75 ? "low" : ""}" style="width:${Math.round(conf * 100)}%"></i></span>${conf.toFixed(2)}</span></li>`;
     const name = carrierName(v);
     const blank = Math.max(0, 4 - v.loads.length);
-    const paper = `<div class="sheet q-${v.quality}" style="--tilt:${P.tilt}deg" role="img" aria-label="Simulated ${v.quality === "clean" ? "PDF" : v.quality} invoice from ${esc(v.header)}">
+    const paper = `<div class="sheet q-${v.quality}" style="--tilt:${P.tilt}deg" role="group" aria-label="Simulated ${v.quality === "clean" ? "PDF" : v.quality} invoice from ${esc(v.header)}">
         ${P.fax ? `<p class="p-fax">${P.fax}</p>` : ""}
         <div class="p-top">
           <div class="p-from"><b ${hit("sender")}>${esc(v.header)}</b><span>${P.street}</span><span>${P.town}</span><span>Tel ${P.phone}</span></div>
@@ -516,9 +518,16 @@
     }
     else if ("pause" in d) { paused = !paused; render(); }
     else if ("apply" in d) {
-      lists = Object.fromEntries(LIST_KEYS.map((key) => [key, fromText(key, $(`[data-list="${key}"]`).value)]));
+      const typed = Object.fromEntries(LIST_KEYS.map((key) => [key, fromText(key, $(`[data-list="${key}"]`).value)]));
+      const base = G.THEMES[data.theme.id];
+      const short = LIST_KEYS.filter((key) => typed[key].length < G.MIN[key]);
+      // Only lists that differ from the theme count as custom, so an untouched form keeps a clean link
+      const changed = LIST_KEYS.filter((key) => !short.includes(key) && JSON.stringify(typed[key]) !== JSON.stringify(base[key]));
+      lists = changed.length ? Object.fromEntries(changed.map((key) => [key, typed[key]])) : null;
       build(sel.value, data.seed);
-      flash(data.theme.custom ? "Lists applied" : "Lists too short; kept the theme's");
+      const names = { first: "carrier names", types: "carrier types", products: "products", origins: "pick-up points", dests: "delivery points" };
+      flash(short.length ? `Too short, kept the theme's: ${short.map((k) => `${names[k]} (at least ${G.MIN[k]})`).join(", ")}`
+        : changed.length ? "Lists applied" : "No changes to apply");
     }
     else if ("resetLists" in d) { lists = null; build(sel.value, data.seed); flash("Back to the theme's lists"); }
     else if ("next" in d) skip();
@@ -528,7 +537,7 @@
   document.addEventListener("keydown", (e) => {
     if (e.altKey || e.ctrlKey || e.metaKey || e.target.matches("input, select, textarea")) return;
     const k = e.key.toLowerCase();
-    if (k === " " && !e.target.closest("button, tr")) { paused = !paused; render(); e.preventDefault(); }
+    if (k === " " && !e.defaultPrevented && !e.target.closest("button, tr, [data-field]")) { paused = !paused; render(); e.preventDefault(); }
     else if (k === "n") skip();
     else if (k === "b") location.href = "../";
   });
@@ -538,5 +547,6 @@
   if (G.THEMES[q.get("theme")]) theme = q.get("theme");
   const h = location.hash.match(/lists=([\w-]+)/);
   if (h) lists = decodeLists(h[1]);
-  build(G.SCENARIOS[q.get("scenario")] ? q.get("scenario") : "ordinary-day", q.get("seed") || randomSeed());
+  // With no scenario in the link, open on one whose key moment lands in the first minute
+  build(G.SCENARIOS[q.get("scenario")] ? q.get("scenario") : "duplicate-storm", q.get("seed") || randomSeed());
 })();

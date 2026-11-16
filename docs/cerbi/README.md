@@ -10,7 +10,7 @@ is in a private repository.
 | [case-study.md](case-study.md) | One page: problem, what I built, results, decisions |
 | [design.md](design.md) | The design document: architecture, data model, reliability, testing |
 | [cost-and-metrics.md](cost-and-metrics.md) | October 2026 volume, outcomes, holds, quality, engineering metrics |
-| [decisions/](decisions/) | Eight architecture decision records |
+| [decisions/](decisions/) | Seven architecture decision records (0002 was withdrawn) |
 | [architecture.svg](architecture.svg) | The pipeline, with today's counts |
 | [metrics.py](metrics.py) | The calculation behind every number; `python docs/cerbi/metrics.py` rewrites [metrics.json](metrics.json) |
 

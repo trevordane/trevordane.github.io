@@ -2,7 +2,8 @@
 
 Short records of the decisions that shaped Cerbi. Each gives the context,
 the decision and its consequences. Dates are when the decision was made.
-Related: [design](../design.md) · [cost and metrics](../cost-and-metrics.md).
+Related: [design](../design.md) · [metrics](../cost-and-metrics.md).
+Number 0002 was withdrawn before it was accepted, so there is no 0002.
 
 *An architecture decision record (ADR) is a one-page note written when a
 design choice is made, so the reasoning survives after the people who made

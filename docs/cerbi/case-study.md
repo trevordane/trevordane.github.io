@@ -26,8 +26,8 @@ be taught the company's rules or say why it stopped.
 - identifies the carrier with exact aliases before fuzzy matching, because
   fuzzy matching alone was confidently wrong on real carrier names;
 - runs every load through its business rules;
-- files complete loads into their folders and an ERP import batch, and holds
-  the rest with a reason of six words or fewer.
+- files complete loads into their folders and organizes them into ERP
+  import batches that a person checks before they go in, and holds the rest with a reason of six words or fewer.
 
 ![Cerbi architecture](architecture.svg)
 
@@ -56,7 +56,8 @@ Details and method: [metrics report](cost-and-metrics.md).
    [ADR 0001](decisions/0001-stub-by-default.md) ·
    [ADR 0003](decisions/0003-batch-by-default.md)
 3. **Stop the run, not the document.** After an API key was disabled on the
-   first live run (one auth error retried 157 times by moving on), a circuit
+   first live run (the error handler skipped past one rejected key and sent the next
+   document, about 157 times), a circuit
    breaker now ends the run on any credential or configuration error.
    [ADR 0005](decisions/0005-circuit-breaker.md)
 4. **Two kinds of "held".** Purgatory for a person, Limbo for paperwork that
@@ -73,12 +74,13 @@ together by about 3,800 tests that run on every push.
 
 ### What I learned
 
-- Budget from production, not samples. The first estimate was 1.75× low,
-  and production then came in 1.7× above the sample. Large packets, 2% of
-  documents, turned out to be over a third of the spend.
+- Budget from production, not samples. Measured cost came in at about
+  1.75× the first estimate. Large packets, 2% of documents, turned out to
+  be over a third of the spend.
 - Put explanations in front of the people who act on them. A six-word reason
-  turned Purgatory from a backlog into a to-do list, and most of its
-  shrinking came from rule changes, not model changes.
+  turned Purgatory from a backlog into a to-do list. Staff read those
+  reasons and asked for rule changes, and those changes, not model changes,
+  shrank it.
 - Report the strict number too. 96.5% filed sounds better than 51.9%
   untouched; showing both is what makes either believable.
 - AI agents build quickly; the hard part is the written rules that keep
