@@ -55,7 +55,19 @@ happens. Switching the theme, or editing a list, changes every name and
 place but keeps the same events in the same order. One scenario can be
 shown to a fuel distributor and a produce shipper and tell the same story.
 
-**6. Same seed, same demo.** The seed, scenario, theme and any edited lists
+**6. The day so far.** A real weekday brings in about 380 documents, so a
+demo that opens with "7 in, 5 filed" looks fake. Each seed also rolls a
+morning's worth of earlier work (a few hundred in, about four in five filed),
+from its own random stream, so the counters read like a real day and the
+story doesn't change.
+
+**7. Pages that look like paper.** Each invoice is drawn as a carrier's own
+form: letterhead, invoice box, bill-to, a line for each load and a total.
+Scans get skew, toner speckle and a received stamp; handwritten tickets get
+blue ink; an unreadable quantity is a smudge. Every value the model read has
+a box on the page, and picking a box or a read field highlights both.
+
+**8. Same seed, same demo.** The seed, scenario, theme and any edited lists
 all go into the link, so "Copy link" hands someone exactly this run.
 "Export JSON" gives the whole dataset: the world and every invoice.
 

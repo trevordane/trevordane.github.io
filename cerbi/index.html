@@ -144,26 +144,63 @@
     /* document */
     .doc-nav { display: flex; flex-wrap: wrap; align-items: center; gap: .5em 1em; margin-bottom: 1em; }
     .doc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5em; align-items: start; }
-    .paper {
-      margin: .3em 0 0; padding: 1.2em 1.5em; color: #2b2a26; font: .9em/1.45 "Plex Sans", sans-serif;
-      background: #e6e1d4; border: 1px solid #cfc8b7; box-shadow: 0 6px 22px rgba(0, 0, 0, .5); transform: rotate(-.5deg);
+    /* The page as it arrived: a printed carrier invoice, then scanned, faxed or filled in by hand */
+    .paper { margin: .3em 0 0; container-type: inline-size; }
+    .paper figcaption { margin-top: .7em; color: var(--a-muted); font-size: .85em; }
+    .doc-tip { font-size: .85em; }
+    .sheet {
+      position: relative; aspect-ratio: 8.5 / 11; overflow: hidden; padding: 6% 6.5%;
+      color: #1d1d1b; background: #fdfdfa; font: 400 clamp(8px, 2.25cqi, 14px)/1.4 "Plex Sans", Arial, sans-serif;
+      box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.55); transform: rotate(var(--tilt, 0deg));
     }
-    .paper.q-scan { background: #d9d4c6; filter: contrast(.92) blur(.25px); transform: rotate(.8deg); }
-    .paper.q-handwritten { background: #e1dbc9; transform: rotate(-1.2deg); }
-    .paper .hand { font-family: "Caveat", cursive; font-weight: 700; font-size: 1.35em; color: #1e3a8a; }
-    .p-head { font-weight: 600; font-size: 1.25em; }
-    .p-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 1em; margin: .3em 0 .8em; color: #5b574d; }
-    .p-lines { width: 100%; border-collapse: collapse; }
-    .p-lines th { text-align: left; font-weight: 600; border-bottom: 1px solid #8f897b; }
-    .p-lines td, .p-lines th { padding: .2em .35em; }
-    .p-total td { border-top: 1px solid #8f897b; font-weight: 600; }
-    .scrawl { font-family: "Caveat", cursive; font-weight: 700; color: #1e3a8a; letter-spacing: -.1em; }
-    .paper figcaption { margin-top: .8em; color: #77715f; font-size: .9em; }
-    .paper .reading { outline: 2px solid #2756c5; outline-offset: 2px; background: rgba(39, 86, 197, .14); }
+    .sheet.q-scan, .sheet.q-handwritten { background: #ecebe4; filter: grayscale(.85) contrast(1.06); color: #262624; }
+    .sheet.q-scan::after, .sheet.q-handwritten::after {   /* toner speckle and scanner shading */
+      content: ""; position: absolute; inset: 0; pointer-events: none; mix-blend-mode: multiply; opacity: .22;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,.07), transparent 4%, transparent 96%, rgba(0,0,0,.09)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.6 1.1'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .sheet.q-handwritten { filter: grayscale(.4) contrast(1.04); }   /* blue ink survives the scan */
+    .p-fax { margin: -4% 0 3%; font: .78em/1 "Plex Mono", monospace; letter-spacing: .04em; color: #444; }
+    .p-top { display: flex; justify-content: space-between; gap: 1em; align-items: flex-start; }
+    .p-from { display: flex; flex-direction: column; font-size: .92em; color: #3a3a37; }
+    .p-from b { font: 700 1.45em/1.15 "Source Serif", Georgia, serif; color: #111; margin-bottom: .2em; }
+    .p-title { text-align: right; }
+    .p-doc { font: 700 1.6em/1 "Plex Sans", Arial, sans-serif; letter-spacing: .12em; margin-bottom: .4em; }
+    .sheet.q-handwritten .p-doc { font-size: 1.05em; letter-spacing: .06em; }
+    .p-box { border-collapse: collapse; margin-left: auto; font-size: .92em; }
+    .p-box th, .p-box td { border: 1px solid #555; padding: .15em .5em; text-align: left; }
+    .p-box th { background: rgba(0,0,0,.06); font-weight: 600; }
+    .p-box td { min-width: 7.5em; }
+    .p-bill { margin: 5% 0 4%; padding: .35em .6em; border: 1px solid #555; width: 55%; font-size: .92em; }
+    .p-lbl { display: block; font-weight: 600; text-transform: uppercase; font-size: .8em; letter-spacing: .06em; color: #555; }
+    .p-lines { width: 100%; border-collapse: collapse; font-size: .9em; }
+    .p-lines th { background: rgba(0,0,0,.08); font-weight: 600; text-align: left; }
+    .p-lines th, .p-lines td { border: 1px solid #666; padding: .3em .4em; }
+    .p-lines .r { text-align: right; }
+    .p-lines td:first-child, .p-lines .r { white-space: nowrap; }
+    .p-blank td { height: 1.6em; }
+    .p-lines tfoot td { font-weight: 700; }
+    .p-remit { margin-top: 5%; font-size: .82em; color: #444; }
+    .p-stamp {
+      position: absolute; transform: rotate(var(--r)); padding: .2em .7em; border: 3px double rgba(178, 34, 34, .75); border-radius: 4px;
+      color: rgba(178, 34, 34, .75); font: 800 1.35em/1.05 "Plex Mono", monospace; letter-spacing: .14em; text-align: center; mix-blend-mode: multiply; pointer-events: none;
+    }
+    .p-stamp span { display: block; font-size: .62em; letter-spacing: .08em; }
+    .sheet .hand { font-family: "Caveat", cursive; font-weight: 700; font-size: 1.3em; line-height: .9; color: #1f3f9a; }
+    .smudge { display: inline-block; padding: 0 .3em; border-radius: 40%; background: radial-gradient(ellipse at center, rgba(60,50,40,.55), rgba(60,50,40,.25) 55%, transparent 75%); }
+    .scrawl { font-family: "Caveat", cursive; font-weight: 700; color: #1f3f9a; letter-spacing: -.08em; opacity: .7; }
+    /* Every field Cerbi read has a box; picking a box or a row selects both */
+    .sheet .hit { outline: 1px dashed rgba(39, 86, 197, .55); outline-offset: 1px; cursor: pointer; }
+    .sheet .hit:hover { background: rgba(39, 86, 197, .08); }
+    .sheet .hit.sel { outline: 2px solid #2756c5; outline-offset: 1px; background: rgba(39, 86, 197, .16); }
+    .sheet .hit:focus-visible, .fields li.hit:focus-visible { outline: 2px solid #f59e0b; outline-offset: 2px; }
     .fields > p { font-size: .82em; color: var(--a-muted); text-transform: uppercase; letter-spacing: .04em; }
     .fields ol { margin: .3em 0 1em; }
     .fields li { display: grid; grid-template-columns: 6.5em 1fr; gap: .1em 1em; padding: .45em .5em; border-bottom: 1px solid var(--a-line); }
-    .fields li.reading { background: var(--a-info-soft); }
+    .fields li.hit { cursor: pointer; }
+    .fields li.hit:hover { background: rgba(127, 127, 127, .08); }
+    .fields li.sel { background: var(--a-info-soft); box-shadow: inset 3px 0 0 var(--a-info, #2756c5); }
     .fields .k { color: var(--a-muted); font-size: .9em; }
     .fields .conf { grid-column: 2; display: flex; align-items: center; gap: .6em; font-size: .85em; color: var(--a-muted); }
     .fields .meter { width: 7em; height: .4em; border-radius: 99px; background: var(--a-line); overflow: hidden; }
@@ -275,6 +312,7 @@
               <li><b class="cy">Themes are lists.</b> Names, carrier types, products, pick-up and delivery points (with optional regions and products) are plain lists, like the name bases in a fantasy map generator. Names come from their own random stream, so swapping a theme reskins the run without changing what happens.</li>
               <li><b class="cy">Knobs.</b> A scenario is a few probabilities over a base mix: how many scans or handwritten pages, unknown senders, duplicates, totals that don't add up.</li>
               <li><b class="cy">Beats.</b> A scenario also pins its key moment to the start, so "Duplicate storm" shows a duplicate in the first minute instead of whenever chance allows.</li>
+              <li><b class="cy">The day so far.</b> Each seed also rolls a morning of earlier work, so the counters start where a real day would be.</li>
               <li><b class="cy">Same seed, same demo.</b> Copy the link and anyone gets exactly this run. Export JSON gives the full dataset. <a href="generator.js">Read generator.js</a>.</li>
             </ul>
           </details>

@@ -42,6 +42,15 @@
   let onboarded = {};   // sender header -> name, added from Review during this session
   const held = () => invoices.filter((v) => v.outcome === "review" && !v.resolved);
   const finished = () => invoices.filter((v) => v.outcome);
+  // The day so far: what came in before the demo opened, plus everything since
+  const today = () => {
+    const base = data.today || { received: 0, filed: 0, approved: 0 };
+    return {
+      received: base.received + invoices.length,
+      filed: base.filed + invoices.filter((v) => v.outcome === "filed" || v.resolved === "approved").length,
+      approved: base.approved + invoices.filter((v) => v.resolved === "approved").length,
+    };
+  };
   const byId = (id) => invoices.find((v) => v.id === id);
   const carrierName = (v) => v.carrierId ? carriers[v.carrierId].name : onboarded[v.header] || null;
 
@@ -165,9 +174,9 @@
   function viewPipeline() {
     const v = current;
     const inStage = (i) => v && !v.outcome && v.stage === i ? 1 : 0;
-    const filed = invoices.filter((w) => w.outcome === "filed" || w.resolved === "approved").length;
+    const t = today();
     const steps = STAGES.map((s, i) => `<li class="card${inStage(i) ? " on" : ""}"><div class="lbl">${s}</div><div class="n">${inStage(i)}</div></li>`).join("")
-      + `<li class="card"><div class="lbl">Finished</div><div class="done-split"><span><b class="n ok">${filed}</b> filed</span><span><b class="n warn">${held().length}</b> to review</span></div></li>`;
+      + `<li class="card"><div class="lbl">Today</div><div class="done-split"><span><b class="n">${t.received.toLocaleString()}</b> in</span><span><b class="n ok">${t.filed.toLocaleString()}</b> filed</span><span><b class="n warn">${held().length}</b> to review</span></div></li>`;
     const DOING = [
       (v) => `Picked up from ${v.source === "email" ? "the shared mailbox" : v.source === "API" ? "the carrier's API" : "a drop folder"}: ${pages(v)}.`,
       (v) => `Matching "${esc(v.header)}" to a known carrier and an open order.`,
@@ -244,60 +253,103 @@
       <p class="note" aria-live="polite">${esc(note)}</p></div>`;
   }
 
+  // ---------- the document as it arrived ----------
+  // Everything printed on the page that the generator doesn't hold (address, phone, stamp, fax
+  // line, tilt) comes from a stream seeded by the run and the invoice, so a page always looks
+  // the same and never moves the story.
+  const BILL_TO = { "aviation-fuel": "Harborline Aviation Fuels", "cold-chain": "Greenway Fresh Distributors", "ltl": "Northfield Supply Co." };
+  const STREETS = ["Industrial Pkwy", "Terminal Rd", "Commerce Dr", "Old Mill Rd", "Depot St", "Harbor Blvd", "Airport Rd", "Front St", "Rail Yard Ln", "Highway 17 S"];
+  const TOWNS = [["Port Lennox", "NC"], ["Cedar Hollow", "SC"], ["Millbrook", "VA"], ["Bay Ridge", "GA"], ["Fairhaven", "NC"], ["Ashford", "SC"], ["Grant Creek", "VA"], ["Pine Landing", "FL"]];
+  const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  let selField = null;
+  function paperOf(v) {
+    const r = G.makeRng(`${data.seed}:${v.id}:paper`);
+    const [y, m, d] = v.date.split("-");
+    const town = r.pick(TOWNS);
+    return {
+      street: `${r.int(100, 9800)} ${r.pick(STREETS)}`,
+      town: `${town[0]}, ${town[1]} ${r.int(27000, 31999)}`,
+      phone: `(${r.pick(["252", "843", "757", "912", "910"])}) 555-01${String(r.int(0, 99)).padStart(2, "0")}`,
+      date: `${m}/${d}/${y}`,
+      handDate: `${Number(m)}/${Number(d)}/${y.slice(2)}`,
+      stampDate: `${MONTHS[Number(m) - 1]} ${d} ${y}`,
+      stamp: v.quality !== "clean" && r.chance(0.7),
+      stampAt: [r.int(52, 70), r.int(56, 74), r.between(-14, 9).toFixed(1)],
+      fax: v.quality === "scan" && v.source === "email" && r.chance(0.5)
+        ? `${MONTHS[Number(m) - 1]}-${d}-${y} ${String(r.int(7, 16)).padStart(2, "0")}:${String(r.int(0, 59)).padStart(2, "0")}   FROM: ${r.pick(["252", "843", "757"])} 555 01${String(r.int(0, 99)).padStart(2, "0")}   P.001/00${v.loads.length > 1 ? 2 : 1}` : "",
+      tilt: v.quality === "clean" ? 0 : r.between(-1.4, 1.4).toFixed(2),
+    };
+  }
   function viewDocument() {
     const done = finished();
     if (!done.length) return `<p class="empty">Waiting for the first invoice...</p>`;
     let v = byId(selected);
     if (!v || !v.outcome) v = done[done.length - 1];
+    if (v.id !== selected) selField = null;
     selected = v.id;
     const i = done.indexOf(v);
     const hand = v.quality === "handwritten";
-    const h = (s) => `<span class="${hand ? "hand" : ""}">${s}</span>`;
+    const P = paperOf(v);
+    const u = data.theme.unit;
+    const h = (s) => hand ? `<span class="hand">${s}</span>` : s;
+    const hit = (key) => `data-field="${key}" tabindex="0" class="hit${selField === key ? " sel" : ""}"`;
     const c = (d) => Math.max(0.3, Math.min(0.99, v.confidence + d));   // no reading is ever certain
     const field = (key, label, value, conf, warn) =>
-      `<li data-field="${key}"><span class="k">${label}</span><span class="${warn ? "bad" : ""}">${value}</span>
+      `<li data-field="${key}" tabindex="0" role="button" aria-pressed="${selField === key}" class="hit${selField === key ? " sel" : ""}"><span class="k">${label}</span><span class="${warn ? "bad" : ""}">${value}</span>
         <span class="conf"><span class="meter"><i class="${conf < 0.75 ? "low" : ""}" style="width:${Math.round(conf * 100)}%"></i></span>${conf.toFixed(2)}</span></li>`;
     const name = carrierName(v);
+    const blank = Math.max(0, 4 - v.loads.length);
+    const paper = `<div class="sheet q-${v.quality}" style="--tilt:${P.tilt}deg" role="img" aria-label="Simulated ${v.quality === "clean" ? "PDF" : v.quality} invoice from ${esc(v.header)}">
+        ${P.fax ? `<p class="p-fax">${P.fax}</p>` : ""}
+        <div class="p-top">
+          <div class="p-from"><b ${hit("sender")}>${esc(v.header)}</b><span>${P.street}</span><span>${P.town}</span><span>Tel ${P.phone}</span></div>
+          <div class="p-title"><p class="p-doc">${hand ? "DELIVERY TICKET / INVOICE" : "INVOICE"}</p>
+            <table class="p-box"><tr><th>Invoice No.</th><td ${hit("ref")}>${esc(v.ref)}</td></tr>
+              <tr><th>Date</th><td ${hit("date")}>${hand ? h(P.handDate) : P.date}</td></tr>
+              <tr><th>Terms</th><td>Net 30</td></tr><tr><th>PO No.</th><td>${v.orderNo ? h(esc(v.orderNo)) : "&nbsp;"}</td></tr></table></div>
+        </div>
+        <div class="p-bill"><span class="p-lbl">Bill to</span>${esc(BILL_TO[data.theme.id] || "Accounts Payable")}<br>Attn: Accounts Payable</div>
+        <table class="p-lines"><thead><tr><th>BOL No.</th><th>${esc(cap(data.theme.words.products.split(" ")[0]))}</th><th>Origin</th><th>Destination</th><th class="r">${cap(u[0])}</th><th class="r">Rate</th><th class="r">Amount</th></tr></thead><tbody>
+          ${v.loads.map((l) => `<tr ${hit(`load-${l.page}`)}><td>${l.bol}</td><td>${h(esc(l.product))}</td><td>${esc(l.from)}</td><td>${esc(l.to)}</td>
+            <td class="r">${l.readable ? h(l.qty.toLocaleString()) : `<span class="smudge"><span class="scrawl">${String(l.qty)[0]},~~0</span></span>`}</td><td class="r">$${l.rate.toFixed(4).replace(/0{1,2}$/, "")}</td><td class="r">${h(money(l.amount))}</td></tr>`).join("")}
+          ${'<tr class="p-blank"><td colspan="7">&nbsp;</td></tr>'.repeat(blank)}
+        </tbody><tfoot><tr ${hit("total")}><td colspan="6" class="r">TOTAL DUE</td><td class="r">${h(money(v.total))}</td></tr></tfoot></table>
+        <p class="p-remit">Please remit to ${esc(v.header)}, ${P.street}, ${P.town}. Reference invoice number with payment. Thank you for your business.</p>
+        ${P.stamp ? `<div class="p-stamp" style="left:${P.stampAt[0]}%;top:${P.stampAt[1]}%;--r:${P.stampAt[2]}deg">RECEIVED<span>${P.stampDate}</span></div>` : ""}
+      </div>`;
     return `<div class="doc-nav"><button class="btn" data-step="-1" ${i ? "" : "disabled"}>&larr; Previous</button>
         <span class="mono">${v.id}</span> <span class="muted" data-of>${i + 1} of ${done.length}</span>
         <button class="btn" data-step="1" ${i < done.length - 1 ? "" : "disabled"}>Next &rarr;</button>
-        <button class="linkish" data-replay>Replay the reading</button></div>
+        <span class="muted doc-tip">Click a field, or a box on the page, to see where it was read.</span></div>
       <div class="doc">
-        <figure class="paper q-${v.quality}" aria-label="Simulated ${v.quality} invoice">
-          <p class="p-head" data-field="sender">${h(esc(v.header))}</p>
-          <p class="p-meta"><span data-field="ref">Invoice ${esc(v.ref)}</span><span data-field="date">${h(v.date)}</span></p>
-          <table class="p-lines"><tr><th>BOL</th><th>Item</th><th>Lane</th><th>${cap(data.theme.unit[0])}</th><th>Amount</th></tr>${v.loads.map((l) => `
-            <tr data-field="load-${l.page}"><td>${l.bol}</td><td>${h(esc(l.product))}</td><td>${esc(l.from)} &rarr; ${esc(l.to)}</td>
-            <td>${l.readable ? h(l.qty.toLocaleString()) : '<span class="scrawl">~~~~</span>'}</td><td>${h(money(l.amount))}</td></tr>`).join("")}
-            <tr data-field="total" class="p-total"><td colspan="4">Total due</td><td>${h(money(v.total))}</td></tr></table>
+        <figure class="paper">${paper}
           <figcaption>${v.quality === "clean" ? "PDF from the carrier" : v.quality === "scan" ? "Scanned page" : "Handwritten, scanned"} · via ${v.source}</figcaption>
         </figure>
         <div class="fields">
           <p>Read by the model</p>
           <ol>
             ${field("sender", "Sender", esc(v.header) + (name ? ` <span class="muted">= ${esc(name)}</span>` : ' <span class="bad">unknown</span>'), c(0.02), !name)}
-            ${field("ref", "Carrier ref", esc(v.ref), c(0.03), false)}
+            ${field("ref", "Invoice no.", esc(v.ref), c(0.03), false)}
             ${field("date", "Date", v.date, c(hand ? -0.05 : 0.01), false)}
-            ${v.loads.map((l) => field(`load-${l.page}`, `Load ${l.page}`, l.readable ? `${esc(l.product)} · ${l.qty.toLocaleString()} ${data.theme.unit[0]} · ${money(l.amount)}` : `${data.theme.unit[1]} unreadable`, l.readable ? c(-0.02 * l.page) : 0.31, !l.readable)).join("")}
+            ${v.loads.map((l) => field(`load-${l.page}`, `Load ${l.page}`, l.readable ? `${esc(l.bol)} · ${esc(l.product)} · ${l.qty.toLocaleString()} ${u[0]} · ${money(l.amount)}` : `${esc(l.bol)} · ${u[1]} unreadable`, l.readable ? c(-0.02 * l.page) : 0.31, !l.readable)).join("")}
             ${field("total", "Total", money(v.total), c(hand ? -0.08 : 0), Math.abs(v.total - v.sum) > 0.01)}
           </ol>
           <div class="result ${v.outcome === "review" && !v.resolved ? "warn" : "ok"}">${chip(v)}<p>${esc(v.reason)}</p></div>
         </div>
       </div>`;
   }
-  // Light up each field and its spot on the page in turn, like the model reading it
-  let readTimers = [];
-  function playReading() {
-    readTimers.forEach(clearTimeout);
-    const clear = () => panel.querySelectorAll(".reading").forEach((n) => n.classList.remove("reading"));
-    clear();
-    const rows = [...panel.querySelectorAll(".fields li[data-field]")];
-    readTimers = rows.map((r, i) => setTimeout(() => {
-      clear();
-      r.classList.add("reading");
-      panel.querySelector(`.paper [data-field="${r.dataset.field}"]`)?.classList.add("reading");
-      if (i === rows.length - 1) readTimers.push(setTimeout(clear, 700));
-    }, 500 * i));
+  // Pick a field: its row in the list and its box on the page light up together. Picking it
+  // again clears it.
+  function selectField(key, from) {
+    selField = selField === key ? null : key;
+    for (const n of panel.querySelectorAll(".doc [data-field]")) {
+      const on = n.dataset.field === selField;
+      n.classList.toggle("sel", on);
+      if (n.matches("li")) n.setAttribute("aria-pressed", String(on));
+    }
+    // Bring the other half into view: the page for a picked row, the row for a picked box
+    const other = from && from.matches("li") ? ".sheet .sel" : ".fields .sel";
+    panel.querySelector(other)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
   // ---------- drawing ----------
@@ -316,7 +368,8 @@
     $(".live").classList.toggle("paused", paused);
     $(".live span").textContent = paused ? "Paused" : cursor >= queue.length && current?.outcome ? "Stream finished" : "Live";
     $("[data-pause]").textContent = paused ? "Resume" : "Pause";
-    $(".b-stats").textContent = `${invoices.length} in · ${invoices.filter((v) => v.outcome === "filed").length} filed · ${held().length} waiting · ${invoices.filter((v) => v.resolved === "approved").length} approved by a person`;
+    const t = today();
+    $(".b-stats").textContent = `Today: ${t.received.toLocaleString()} in · ${t.filed.toLocaleString()} filed · ${held().length} waiting · ${t.approved.toLocaleString()} approved by a person`;
     if (!full && tab !== "pipeline") {
       for (const n of panel.querySelectorAll("[data-held]")) {
         const k = held().filter((v) => v.rule === n.dataset.held).length;
@@ -337,11 +390,12 @@
   function go(t) {
     tab = t; note = "";
     render(true);
-    if (tab === "document") playReading();
   }
 
   // ---------- input: the app ----------
   app.addEventListener("click", (e) => {
+    const f = e.target.closest(".doc [data-field]");
+    if (f) { selectField(f.dataset.field, f); return; }
     const b = e.target.closest("button, tr[data-open]");
     if (!b) return;
     const d = b.dataset;
@@ -367,13 +421,15 @@
     else if (d.step) {
       const done = finished(), n = done[done.indexOf(byId(selected)) + Number(d.step)];
       if (n) selected = n.id;
-      render(true); playReading();
+      selField = null;
+      render(true);
     }
-    else if ("replay" in d) playReading();
   });
   app.addEventListener("keydown", (e) => {
     const row = e.target.closest("tr[data-open]");
     if (row && row.dataset.open && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); row.click(); }
+    const f = e.target.closest(".doc [data-field]");
+    if (f && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); selectField(f.dataset.field, f); }
     // Tabs: arrow keys move along them
     if (e.target.getAttribute("role") === "tab" && (e.key === "ArrowRight" || e.key === "ArrowLeft")) {
       const tabs = [...root.querySelectorAll("[role=tab]")];
