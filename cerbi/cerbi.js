@@ -262,6 +262,18 @@
   const TOWNS = [["Port Lennox", "NC"], ["Cedar Hollow", "SC"], ["Millbrook", "VA"], ["Bay Ridge", "GA"], ["Fairhaven", "NC"], ["Ashford", "SC"], ["Grant Creek", "VA"], ["Pine Landing", "FL"]];
   const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
   let selField = null;
+  // One coffee-stained page per run: a scan or handwritten page early enough to be seen
+  let ring = null;
+  function ringPage() {
+    const key = `${data.scenario}:${data.seed}`;
+    if (!ring || ring.key !== key) {
+      const messy = data.invoices.filter((w) => w.quality !== "clean");
+      const early = messy.filter((w) => w.phase === "history");   // already there when the demo opens
+      const pool = early.length ? early : messy.slice(0, 3);
+      ring = { key, id: pool.length ? G.makeRng(`${key}:ring`).pick(pool).id : null };
+    }
+    return ring.id;
+  }
   function paperOf(v) {
     const r = G.makeRng(`${data.seed}:${v.id}:paper`);
     const [y, m, d] = v.date.split("-");
@@ -281,7 +293,7 @@
       // Handling: creases, tri-fold lines from the envelope, now and then a coffee ring
       wrinkle: r.between(0.18, 0.42).toFixed(2), flip: r.chance(0.5), shift: `${r.int(0, 100)}% ${r.int(0, 100)}%`,
       folds: r.chance(0.55),
-      ring: r.chance(0.3) ? { x: r.int(-10, 60), y: r.int(-8, 70), rot: r.int(0, 359), size: r.int(38, 62), alpha: r.between(0.35, 0.7).toFixed(2) } : null,
+      ring: v.id === ringPage() ? { x: r.int(-10, 60), y: r.int(-8, 70), rot: r.int(0, 359), size: r.int(38, 62), alpha: r.between(0.45, 0.7).toFixed(2) } : null,
     };
   }
   function viewDocument() {
