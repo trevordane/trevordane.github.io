@@ -1,5 +1,5 @@
 /* Trevor Dane Respress portfolio: a 1990s bulletin board on the screen.
-   Layered after screen.css, which supplies the housing, glass and parallax.
+   Layered after screen.css, which supplies the housing and glass.
    Everything sits on one monospace grid. The boxes use + = | because the
    self-hosted Plex Mono subset has no box-drawing characters.
    bbs.js shows one board screen at a time; without JavaScript every screen
