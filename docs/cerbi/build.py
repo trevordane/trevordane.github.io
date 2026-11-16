@@ -130,7 +130,6 @@ TEMPLATE = """<!doctype html>
       <p class="gen">Generated from <a href="{src_href}">{src_name}</a> by build.py. Figures as of {asof}.</p>
     </div>
   </main>
-  <script src="{root}screen.js"></script>
 </body>
 </html>
 """

@@ -12,8 +12,7 @@ self-hosted.
 | `banner.js` | Banner animation: a random intro on each load (type, decode, scan, boot), then a shimmer every 5s with a glitch in its place every 3rd–5th time. `?intro=<name>` forces an intro for testing. |
 | `sound.js` | Optional background sound (off until the visitor turns it on: footer switch or S key; remembered): a hum + hiss loop, and a static burst on each banner glitch. Browsers block sound until the first click, tap or key, so a remembered "on" reads "on, click to start" until then. |
 | `cerbi/` | Interactive Cerbi simulation (fictional data), linked from [1] Work. Each tab has an About panel (copy in `ABOUT` in `cerbi.js`); pace is set by `STEP_MS` and `ARRIVE_MS` at the top of the same file. |
-| `screen.css` | Monitor housing, frosted glass and parallax around the board. |
-| `screen.js` | The parallax. |
+| `screen.css` | Monitor housing and frosted glass around the board. |
 | `fonts.css` | `@font-face` for every font, shared by the site and the résumé. |
 | `site.js` | Footer year. |
 | `resume.html` | Source of both résumé PDFs (BBS style). Edit this, not the PDFs. |
