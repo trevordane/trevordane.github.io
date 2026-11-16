@@ -73,6 +73,7 @@
 
     .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .cards:has(> .card:only-child) { grid-template-columns: 1fr; }
+    a.card { display: block; }
     .card { border: 1px solid var(--box); padding: 10px 12px 9px; position: relative; }
     .card h3 { position: absolute; top: -.75em; left: 10px; padding: 0 5px; background: var(--bg); color: var(--cyan); font-weight: 400; }
     .card .tag2 { color: var(--amber); margin-bottom: 3px; }
@@ -116,7 +117,7 @@
           <dt>EMAIL</dt><dd><a href="mailto:trevordrespress@gmail.com">trevordrespress@gmail.com</a></dd>
           <dt>WEB</dt><dd><a id="site-link" href="https://trevordane.github.io/">trevordane.github.io</a></dd>
           <dt>LINKEDIN</dt><dd><a href="https://www.linkedin.com/in/trevordrespress">linkedin.com/in/trevordrespress</a></dd>
-          <dt>BASED</dt><dd>New Bern, NC</dd>
+          <dt>BASED</dt><dd><a href="https://www.newbernnc.gov/">New Bern, NC</a></dd>
         </dl>
       </section>
     </div>
@@ -171,16 +172,16 @@
     <div class="projects">
       <h2 class="head"><span>[3] PROJECTS</span><span class="rule" aria-hidden="true"></span></h2>
       <div class="cards">
-        <div class="card" data-project="cerbi-demo">
+        <a class="card" data-project="cerbi-demo" href="https://trevordane.github.io/cerbi/">
           <h3>[ CERBI DEMO ]</h3>
           <p class="tag2">SEEDED DEMO-DATA GENERATOR / JAVASCRIPT</p>
           <p>Runs Cerbi's interface on invented data. Builds a consistent world (carriers, rates, orders, lanes) before any invoice; 4 scenarios pin their key moment to the first minute; 3 industry themes are swappable lists. Same seed, same demo: shareable link and JSON export.</p>
-        </div>
-        <div class="card" data-project="writing">
+        </a>
+        <a class="card" data-project="writing" href="https://trevordane.github.io/docs/cerbi/">
           <h3>[ WRITING ]</h3>
           <p class="tag2">CASE STUDY / DESIGN DOC / DECISION RECORDS</p>
           <p>Public write-ups of Cerbi for non-engineers and engineers: a one-page case study, a metrics report, a design document, seven decision records and how the demo generator works.</p>
-        </div>
+        </a>
       </div>
     </div>
 
