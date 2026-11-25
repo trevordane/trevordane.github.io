@@ -44,6 +44,7 @@
 <span class="row">|                                          |
 </span><span class="row">|   <span class="k">[1]</span>  <a href="#work" data-screen="work">Work</a> <span class="dots">.........</span> <span class="hint">invoice automation</span> |
 </span><span class="row">|   <span class="k">[D]</span>  <a href="cerbi/" class="demo-row">Cerbi Demo</a> <span class="dots">...</span> <span class="hint">try the simulation</span> |
+</span><span class="row">|   <span class="k">[N]</span>  <a href="#nexus" data-screen="nexus">Nexus</a> <span class="dots">........</span> <span class="hint">AI agent oversight</span> |
 </span><span class="row">|   <span class="k">[W]</span>  <a href="#writing" data-screen="writing">Writing</a> <span class="dots">......</span> <span class="hint">case study, design</span> |
 </span><span class="row">|   <span class="k">[2]</span>  <a href="#experience" data-screen="experience">Experience</a> <span class="dots">...</span> <span class="hint">Titan, SGM</span>         |
 </span><span class="row">|   <span class="k">[3]</span>  <a href="#toolkit" data-screen="toolkit">Toolkit</a> <span class="dots">......</span> <span class="hint">skills</span>             |
@@ -51,7 +52,7 @@
 </span><span class="row">|   <span class="k">[R]</span>  <a href="pdf/full/Trevor-Dane-Respress-Resume.pdf" download data-resume id="resume-link">Download résumé</a>                   |
 </span><span class="row">|                                          |
 </span>+==========================================+</pre></nav>
-        <p class="sel js-only">Selection: <span class="cursor" aria-hidden="true"></span> <span class="dim keys-hint">(press a number, D, W or R, or click)</span><span class="dim touch-hint">(tap an option)</span></p>
+        <p class="sel js-only">Selection: <span class="cursor" aria-hidden="true"></span> <span class="dim keys-hint">(press a number, D, N, W or R, or click)</span><span class="dim touch-hint">(tap an option)</span></p>
       </section>
 
       <!-- ===================== [1] WORK ===================== -->
@@ -81,6 +82,48 @@
         </ul>
       </section>
 
+      <!-- ===================== [N] NEXUS ===================== -->
+      <section class="screen" id="nexus" aria-labelledby="nex-h">
+        <h2 class="head" id="nex-h"><span>[N] NEXUS : A FLARE BOARD FOR PEOPLE AND AI AGENTS</span><span class="rule" aria-hidden="true"></span></h2>
+        <p class="body"><span class="name">Personal project</span> <span class="dim">/ TypeScript, Cloudflare Workers / in use</span></p>
+        <p class="body">A hub where tools, scheduled jobs and AI coding agents raise “flares” when something needs attention. Agents claim and diagnose them, and a person decides from a phone app. Around the flares it keeps a project board, an impact log and a living map of how the work gets done.</p>
+        <dl class="kv">
+          <dt>STACK</dt><dd>Hono, D1, R2, Durable Objects, Queues, Cron; a phone web app with push</dd>
+          <dt>SIZE</dt><dd>about 49,000 lines of TypeScript, about 1,000 automated tests</dd>
+          <dt>IN USE</dt><dd>[since when, and how many flares or approvals a week]</dd>
+        </dl>
+        <h3 class="dim">-- THE PROBLEM --</h3>
+        <ul class="bul dim-list">
+          <li><b>Too much work, in too many places.</b> Projects arrive from other people faster than they finish, and where each one stands is spread across email, chat, repos and notes.</li>
+          <li><b>No clear answer to “what needs me?”</b> Every tool’s alerts look equally urgent, so the one that matters gets lost.</li>
+          <li><b>AI agents need a supervisor.</b> Agents can diagnose problems and open pull requests, but a person has to approve what they do, and not only from a desk.</li>
+          <li><b>Context and credit go missing.</b> Picking a project back up means re-reading everything, and the impact of the work is hard to show later.</li>
+        </ul>
+        <h3 class="dim">-- ONE FLARE, END TO END --</h3>
+        <ol class="flow">
+          <li><span class="n">01</span> <b>Raise</b> a flare from any tool or agent. A repeat of the same problem updates the open flare instead of starting a new one.</li>
+          <li><span class="n">02</span> <b>Route</b> it by severity: a push with sound, a silent push, or a line in the morning digest. Quiet hours hold everything but critical.</li>
+          <li><span class="n">03</span> <b>Claim</b> it: an agent takes the flare on a short lease, adds its diagnosis and proposes a fix. If the agent stalls, the lease runs out and the flare reopens.</li>
+          <li><span class="n">04</span> <b>Ask</b> the person anything the agent can’t decide. The flare moves to “needs me”.</li>
+          <li><span class="n">05</span> <b>Decide</b> in Looking Glass, the phone app: approve, reject, reply, snooze or mute. Risky approvals need a fresh fingerprint or face check (passkey).</li>
+          <li><span class="n">06</span> <b>Ship</b> an approved fix: a bot squash-merges the pull request only if its checks are green and the code hasn’t changed since the approval. Deploying is a second, separate approval.</li>
+        </ol>
+        <h3 class="dim">-- WHAT ELSE IT HOLDS --</h3>
+        <ul class="bul dim-list">
+          <li><b>Workboard.</b> Every project with who it is for, its finish line and a next action sized for one sitting. A pickup card lets a person or an agent resume where the last session stopped; agents draft handoffs and a person confirms them. A daily focus list and a weekly load check show when assigned work outgrows the hours.</li>
+          <li><b>Impact log.</b> What changed in each area and by how much, drafted by agents and confirmed by a person, ready for reviews and write-ups.</li>
+          <li><b>Living map.</b> A graph of teams, steps, paperwork and the systems behind them, readable by people and AI agents. It looks for gaps (an unowned step, a dead end, a manual hand-off between two systems, a long wait) and queues them as questions to review.</li>
+          <li><b>Claude connector.</b> Claude apps read the board and draft notes, projects and map entries through an MCP server, signed in with OAuth and a passkey.</li>
+        </ul>
+        <h3 class="dim">-- DESIGN DECISIONS --</h3>
+        <ul class="bul dim-list">
+          <li><b>Agents ask, people decide.</b> Only a person can approve, snooze, silence or give an instruction, and an agent can never approve its own request. Every decision records whether it was confirmed with a passkey.</li>
+          <li><b>Noise control lives in one place.</b> Tools report what they see; Nexus alone decides grouping, silences and how loudly to notify.</li>
+          <li><b>Boards never mix.</b> Personal and work projects run as two separate deployments that never call each other. The phone app signs into each one and keeps their data apart.</li>
+          <li><b>The phone only decides.</b> Looking Glass holds no server or GitHub keys and never acts by itself; it sends decisions back and the board carries them out.</li>
+        </ul>
+      </section>
+
       <!-- ===================== [W] WRITING ===================== -->
       <section class="screen" id="writing" aria-labelledby="wri-h">
         <h2 class="head" id="wri-h"><span>[W] WRITING</span><span class="rule" aria-hidden="true"></span></h2>
@@ -102,7 +145,7 @@
           <ul class="bul">
             <li>Built Cerbi, the invoice automation platform in [1], with its rules engine and review inbox.</li>
             <li>Connected Cerbi to Claude agents through MCP servers, and run its development with Claude Code agents, a task board and PR review.</li>
-            <li>Built Nexus, a TypeScript alert hub on Cloudflare Workers: tools raise issues, AI agents triage them, and a person approves from a phone app with passkey sign-in.</li>
+            <li>Built Nexus, the flare board in [N]: tools raise issues, AI agents triage them and propose fixes, and a person approves, merges and deploys from a phone app with passkeys.</li>
             <li>Built a driver-ticket reader and a pay-rate lookup tool for the company’s trucking carrier.</li>
             <li>Leading the move off paper, consolidating dispatch, freight, billing and accounting onto one internal web platform.</li>
             <li>Redesigning driver logging and pay ahead of automation; streamlined freight invoice matching, rates and load splits.</li>
@@ -127,7 +170,7 @@
         <h2 class="head" id="tool-h"><span>[3] TOOLKIT</span><span class="rule" aria-hidden="true"></span></h2>
         <div class="cols">
           <div><h3>BUILD</h3><ul><li>Python · TypeScript</li><li>Anthropic Claude API · MCP</li><li>LLM document extraction · OCR</li><li>Prompt design · structured outputs (JSON)</li><li>Evals: extraction accuracy</li><li>Human-in-the-loop review</li><li>Internal tool development</li><li>Workflow automation</li></ul></div>
-          <div><h3>INTEGRATE</h3><ul><li>REST APIs</li><li>Microsoft Graph · SharePoint</li><li>Samsara · Square9</li><li>Fuel-industry ERP systems · SQL</li><li>IIS · GitHub Actions</li><li>Cloudflare Workers</li></ul></div>
+          <div><h3>INTEGRATE</h3><ul><li>REST APIs</li><li>Microsoft Graph · SharePoint</li><li>Samsara · Square9</li><li>Fuel-industry ERP systems · SQL</li><li>IIS · GitHub Actions</li><li>Cloudflare Workers · D1 · Durable Objects</li><li>WebAuthn passkeys · Web Push</li></ul></div>
           <div><h3>OPERATE</h3><ul><li>Process optimization</li><li>Systems design</li><li>Logistics management</li><li>Cross-border trade &amp; compliance</li><li>Project management</li><li>Technical writing</li><li>Microsoft Office · Dynamics AX</li></ul></div>
         </div>
       </section>
@@ -147,6 +190,7 @@
       <nav class="foot" aria-label="Board">
         <a href="#menu" data-screen="menu"><span class="k">[Q]</span> Main menu</a>
         <a href="#work" data-screen="work"><span class="k">[1]</span> Work</a>
+        <a href="#nexus" data-screen="nexus"><span class="k">[N]</span> Nexus</a>
         <a href="#writing" data-screen="writing"><span class="k">[W]</span> Writing</a>
         <a href="#experience" data-screen="experience"><span class="k">[2]</span> Experience</a>
         <a href="#toolkit" data-screen="toolkit"><span class="k">[3]</span> Toolkit</a>

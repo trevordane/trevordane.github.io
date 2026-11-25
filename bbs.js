@@ -1,9 +1,9 @@
-// The board: one screen at a time. Number keys pick a screen, W opens Writing, Q or Esc returns to the menu, D opens the simulation, R downloads the résumé.
+// The board: one screen at a time. Number keys pick a screen, N opens Nexus, W opens Writing, Q or Esc returns to the menu, D opens the simulation, R downloads the résumé.
 // Each screen gets a history entry, so Back (or the phone's back gesture)
 // returns to the menu. The page always opens at the top so the banner shows.
 (() => {
   const screens = [...document.querySelectorAll(".screen")];
-  const keys = { 1: "work", 2: "experience", 3: "toolkit", 4: "contact", w: "writing" };
+  const keys = { 1: "work", 2: "experience", 3: "toolkit", 4: "contact", n: "nexus", w: "writing" };
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
   function show(id, { focus = false, push = false } = {}) {
