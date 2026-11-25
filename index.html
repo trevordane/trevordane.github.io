@@ -85,7 +85,7 @@
       <!-- ===================== [N] NEXUS ===================== -->
       <section class="screen" id="nexus" aria-labelledby="nex-h">
         <h2 class="head" id="nex-h"><span>[N] NEXUS : A FLARE BOARD FOR PEOPLE AND AI AGENTS</span><span class="rule" aria-hidden="true"></span></h2>
-        <p class="body"><span class="name">Personal project</span> <span class="dim">/ TypeScript, Cloudflare Workers / in use</span></p>
+        <p class="body"><span class="name">Sole developer</span> <span class="dim">/ TypeScript, Cloudflare Workers / in use</span></p>
         <p class="body">A hub where tools, scheduled jobs and AI coding agents raise “flares” when something needs attention. Agents claim and diagnose them, and a person decides from a phone app. Around the flares it keeps a project board, an impact log and a living map of how the work gets done.</p>
         <dl class="kv">
           <dt>STACK</dt><dd>Hono, D1, R2, Durable Objects, Queues, Cron; a phone web app with push</dd>
@@ -118,7 +118,6 @@
         <ul class="bul dim-list">
           <li><b>Agents ask, people decide.</b> Only a person can approve, snooze, silence or give an instruction, and an agent can never approve its own request. Every decision records whether it was confirmed with a passkey.</li>
           <li><b>Noise control lives in one place.</b> Tools report what they see; Nexus alone decides grouping, silences and how loudly to notify.</li>
-          <li><b>Boards never mix.</b> Personal and work projects run as two separate deployments that never call each other. The phone app signs into each one and keeps their data apart.</li>
           <li><b>The phone only decides.</b> Looking Glass holds no server or GitHub keys and never acts by itself; it sends decisions back and the board carries them out.</li>
         </ul>
       </section>
