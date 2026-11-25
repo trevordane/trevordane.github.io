@@ -10,8 +10,9 @@
     let target = screens.find((s) => s.id === id && !s.hidden);
     if (!target) target = document.getElementById("menu");
     for (const s of screens) s.classList.toggle("is-active", s === target);
-    // No "Main menu" link while you're on the main menu
-    document.querySelector('.foot [data-screen="menu"]').hidden = target.id === "menu";
+    // The main menu already lists every screen, so the footer's screen links
+    // would only repeat it there; they show on every other screen
+    for (const a of document.querySelectorAll(".foot a[data-screen]")) a.hidden = target.id === "menu";
     // The menu is the plain URL; writing "#menu" would also make Chrome start Tab
     // navigation from the menu, skipping the skip link
     const hash = target.id === "menu" ? "" : "#" + target.id;
