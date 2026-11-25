@@ -1,6 +1,6 @@
 // Renders resume.html to three PDFs (US Letter, one page each), all named
 // Trevor-Dane-Respress-Resume.pdf so the name is right wherever a copy ends up:
-//   pdf/full/          with Projects (Cerbi Demo, Writing)
+//   pdf/full/          with Projects (Cerbi Demo, Writing, Nexus)
 //   pdf/no-projects/   no Projects section
 //   pdf/print/         plain print / ATS copy: light colours, larger text, no Projects
 // Usage, from the repo root:  node tools/export-resume.js

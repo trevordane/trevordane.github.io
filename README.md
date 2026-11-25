@@ -8,7 +8,7 @@ self-hosted.
 |---|---|
 | `index.html` | The site: a 1990s-style bulletin board. All content lives here. |
 | `bbs.css` | The board's look: monospace grid, ASCII banner and menu, Blade Runner colours. |
-| `bbs.js` | One board screen at a time: number keys or clicks, W for Writing, Q/Esc back to the menu, D for the simulation, R for the résumé. |
+| `bbs.js` | One board screen at a time: number keys or clicks, N for Nexus, W for Writing, Q/Esc back to the menu, D for the simulation, R for the résumé. |
 | `banner.js` | Banner animation: a random intro on each load (type, decode, scan, boot), then a shimmer every 5s with a glitch in its place every 3rd–5th time. `?intro=<name>` forces an intro for testing. |
 | `sound.js` | Optional background sound (off until the visitor turns it on: footer switch or S key; remembered): a hum + hiss loop, and a static burst on each banner glitch. Browsers block sound until the first click, tap or key, so a remembered "on" reads "on, click to start" until then. |
 | `cerbi/` | Interactive Cerbi demo (generated, fictional data), linked from [1] Work. `generator.js` builds each run from a scenario, theme and seed; `cerbi.js` plays it back (pace is `T` and `SPEED` at the top). |
@@ -18,7 +18,7 @@ self-hosted.
 | `fonts.css` | `@font-face` for every font, shared by the site and the résumé. |
 | `site.js` | Footer year. |
 | `resume.html` | Source of both résumé PDFs (BBS style). Edit this, not the PDFs. |
-| `pdf/full/` | Résumé with Projects (Cerbi Demo, Writing). Linked from the site. |
+| `pdf/full/` | Résumé with Projects (Cerbi Demo, Writing, Nexus). Linked from the site. |
 | `pdf/no-projects/` | Résumé with no Projects section. Not linked; for sending. |
 | `tools/export-resume.js` | Regenerates both PDFs. |
 | `fonts/` | IBM Plex Sans + Mono, Source Serif 4, Michroma, DSEG7 (all SIL OFL, see `LICENSES.txt`). |
